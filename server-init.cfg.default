@@ -11,7 +11,7 @@ setlogfile "log/serverlog.gmsl"
 serversoftwarename = "GoldMod Collect"
 servershortname = "@GOLDMOD_SERVER@"
 serverdate = "2015-2016"
-serverversion = "GoldMod Deltha 6.6.3_015 Rev 5.5 (VI)"
+serverversion = "GoldMod Deltha 6.5.5_013 Rev 5.5 (VI)"
 serverauthors = "/BudSpencer, .rC|Terence and others ..."
 
 echo "********************************************************************************"
@@ -39,8 +39,6 @@ exec "scripts/PermissionConfig.cfg" // file to Initialize player permissions
 exec "scripts/DatabaseInitialization.cfg" // system to Initialize sqlite3 database engine
 exec "scripts/AntiCheatSystem.cfg" // anticheat system header( libary )
 exec "scripts/Totalstats.cfg" // totalstats libary ( required for totalstats system + #stats <cn> TOTAL )
-
-exec "VPN_ban/askidban.cfg" // askidban ban libary
 
 
 // -------------------------------------
@@ -78,7 +76,7 @@ serverowner = "Enter_Your_Name_Here"
 servercountry = "Enter_Location_Here"
 
 // Message of the day
-servermotd  ( format "Hello and welcome to my server, running %1" $serverversion )
+servermotd  "Hello and welcome to my server, running GoldMod Deltha 6.4.2_09 Rev 5.2 (IV)"
 
 // Max number of connected clients
 maxclients 24
@@ -97,7 +95,7 @@ publicserver 2
 updatemaster 1
 
 // optional specific IP for server to use
-// serverip 0.0.0.0
+//serverip 0.0.0.0
 
 // Server port. 
 // Sauerbraten uses serverport and serverport+1 so don't forget to update your firewall/NAT settings (by default: 28785 - TCP, 28786 - UDP)
@@ -108,11 +106,11 @@ serverport 28785
 // using the serverauth option allows people with an appropriate local authkey to connect regardless
 // serverpass ""
 
-// Password to become admin
-adminpass hjbdfhibsdfih<sdofi<sdoiufhouihoiuhbhi
+// Password to become admin ---> disabled due security reasons
+// adminpass xy
 
-// Password for gain master
-masterpass 12342401232,mb32ko3kepwekrd
+// Password for gain master ---> disabled due security reasons
+// masterpass yx
 
 // domain to use for local authkeys to the server so people can authenticate by "auth domain_here"
 // must be a non-empty string that should be unique to your server to prevent clashes with other servers
@@ -144,7 +142,7 @@ lockmaprotation 2
 ctftkpenalty 1
 
 // save and load permanent bans here
-banfile "permbans.cfg"
+banfile "VPN_Ban/permbans.cfg"
 
 // Rcon configuration (allows you connect remotely to the server and execute any cubescript on it)
 // rconproto 0 // Rcon protocol 0 - udp, 1 - tcp
@@ -158,7 +156,7 @@ banfile "permbans.cfg"
 // GeoIP Country database
 geodb "GeoIPCountry.dat"
 
-// GeoIP City database ---> idk correctly, if that database works
+// GeoIP City database
 geocitydb "GeoIPCity.dat"
 /////////////////////////////////////////////
 
@@ -378,7 +376,7 @@ kick_time_for_abusing = 6 // 6 hours ban for abusing
 
 // ------------------------------------------------------------------------------ \\
 
-// *** USER SYSTEM ( IP-Based and PASSWORD based ) *** \\
+// *** USER SYSTEM ( IP-Based ) *** \\
 
 user_db = "default"
 

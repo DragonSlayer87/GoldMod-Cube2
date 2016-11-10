@@ -101,7 +101,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt, "GoldMod %s (Build %s %s) %s/%s", REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
+    formatstring(txt, "Remod %s %s (build %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
@@ -600,12 +600,11 @@ void getvalue(const char* ident, const char* def) {
 void uptimef(const char *fmt)
 {
     // max correct uptime 134 years
-    // %s - seconds, %m - minutes, %h - hours, %d - days, %o - months, %y - years
-    uint seconds, minutes, hours, days, months, years;
+    // %s - seconds, %m - minutes, %h - hours, %d - days, %y
+    uint seconds, minutes, hours, days, years;
     vector<char> s;
 
     years = totalsecs/(60*60*24*365); // dont count leap year
-	months = totalsecs/(60*60*24*31);
     days = (totalsecs/(60*60*24))%365;
     hours = (totalsecs/(60*60))%24;
     minutes = (totalsecs/(60))%60;
@@ -651,14 +650,6 @@ void uptimef(const char *fmt)
                     const char *sdays;
                     sdays = intstr(days);
                     while(*sdays) s.add(*sdays++);
-                    break;
-                }
-
-				case 'o':
-                {
-                    const char *smonths;
-                    smonths = intstr(months);
-                    while(*smonths) s.add(*smonths++);
                     break;
                 }
 
@@ -1005,7 +996,7 @@ void listat(tagval *args, int numargs)
     DELETEA(res);
 }
 
-// set privelege PRIV_NONE, PRIV_MASTER, PRIV_ADMIN PRIV_ROOT
+// set privelege PRIV_NONE, PRIV_MASTER, PRIV_ADMIN
 void setpriv(int *cn, char *s)
 {
     clientinfo *ci = (clientinfo *)getclientinfo(*cn);
@@ -1021,7 +1012,6 @@ void setpriv(int *cn, char *s)
     {
         switch(s[0])
         {
-			// case 'r': priv = PRIV_ROOT; break;
             case 'n': priv = PRIV_NONE; break;
             case 'm': priv = PRIV_MASTER; break;
             case 'a': priv = PRIV_ADMIN; break;

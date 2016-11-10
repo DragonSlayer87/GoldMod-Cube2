@@ -1170,6 +1170,8 @@ namespace server
         putint(p, -1);
         sendpacket(-1, 1, p.finalize());
 
+        // remod
+        remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, pass, authname ? authname:"", authdesc ? authdesc:"");
 
         checkpausegame();
         return true;
@@ -1983,8 +1985,8 @@ namespace server
             // ts.respawn();
 
             // remod
-            if(onfrag)      remod::onevent(ONFRAG,     "ii", actor->clientnum, target->clientnum);
-            if(onteamkill)  remod::onevent(ONTEAMKILL, "ii", actor->clientnum, target->clientnum);
+            if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
+            if(onteamkill)  remod::onevent(ONTEAMKILL, "i", actor->clientnum);
             if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
             if(onsuicide)
             {

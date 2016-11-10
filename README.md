@@ -19,6 +19,7 @@ Goldmod is an advanced server modification based on remod.
 - many useful scripts for server 
 - scoreboard (sqlite3 + mysql)
 - remote control
+- user system (ip + password)
 
 and very much more ...
 
@@ -30,12 +31,14 @@ Some useful Commands:
 
     #help - show server command list
     #setpriv - set privilege of specified player
-    #stats <cn> (<total>) - show stats of specified player. You can also look at the total stats from the local database.
+    #stats <cn> (<TOTAL>) - show stats of specified player. You can also look at the total stats from the local database.
     #mastermode - change mastermode
     #votekick - vote to kick player (50+% required)
     #mapsucks - vote for intermission (50+% required)
-    (#duel - start duel mode - just with custom module from goldmod-userscripts)
-    (#tournament - start tournament mode - just with custom module from goldmod-userscripts)
+    #adduser - adds new user to user system
+    #deluser - delete a specified user from user system
+    #setpriv - set players privilege to anything you want
+    #comp - execute cubescript code in server
     
     ... and much more ... :D
 
