@@ -92,7 +92,7 @@ and very much more ...
 
 -------------------------------------------------------------------------------------------------------------
 
-**Update your Server-Mod:""
+**Update your Server-Mod:**
 
     1. Open Terminal Shell
     2. type in: cd GoldMod-Cube2
@@ -105,7 +105,7 @@ and very much more ...
 
 **Contact:**
 
-    E-Mail: buddymod.cube2@gmail.com
+    E-Mail: githubseb.contact@gmail.com
     IRC: Server: irc.gamesurge.com 6667 | Channel: #buds-servers, #novi, #sauercom and #impressivesquad ---> Names: BudSpencer
     Ingame: Names: /BudSpencer, Archaeopteryx, Cocoz
 
