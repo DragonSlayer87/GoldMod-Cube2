@@ -3,9 +3,11 @@
 
 #include "fpsgame.h"
 #include "GeoIP.h"
+#include "GeoIPCity.h"
 
 namespace remod
 {
+    namespace geoip {
     class GeoIPtool
     {
         private:
@@ -46,6 +48,8 @@ namespace remod
                 return NULL;
             }
         }
+        
     };
-}
+        const char *getcity(const char *addr);
+}}
 #endif

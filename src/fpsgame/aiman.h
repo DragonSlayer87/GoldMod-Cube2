@@ -1,4 +1,6 @@
 // server-side ai manager
+// ainame: /BudSpencer 
+
 namespace aiman
 {
     bool dorefresh = false;
@@ -79,6 +81,8 @@ namespace aiman
 		}
         return least;
 	}
+	
+	SVAR(ainame, ""); // change bot name
 
 	bool addai(int skill, int limit)
 	{
@@ -119,7 +123,7 @@ namespace aiman
         ci->state.skill = skill <= 0 ? rnd(50) + 51 : clamp(skill, 1, 101);
 	    clients.add(ci);
 		ci->state.lasttimeplayed = lastmillis;
-		copystring(ci->name, "bot", MAXNAMELEN+1);
+		copystring(ci->name, ainame, MAXNAMELEN+1);
 		ci->state.state = CS_DEAD;
         copystring(ci->team, team, MAXTEAMLEN+1);
         ci->playermodel = rnd(128);
@@ -235,13 +239,13 @@ namespace aiman
 	void reqadd(clientinfo *ci, int skill)
 	{
         if(!ci->local && !ci->privilege) return;
-        if(!addai(skill, !ci->local && ci->privilege < PRIV_ADMIN ? botlimit : -1)) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to create or assign bot");
+        if(!addai(skill, !ci->local && ci->privilege < PRIV_ADMIN ? botlimit : -1)) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Failed to \f3create \f7a \f4bot\f7.");
 	}
 
 	void reqdel(clientinfo *ci)
 	{
         if(!ci->local && !ci->privilege) return;
-        if(!deleteai()) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to remove any bots");
+        if(!deleteai()) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Failed to \f3remove \f7any \f4bots\f7.");
 	}
 
     void setbotlimit(clientinfo *ci, int limit)
@@ -253,7 +257,7 @@ namespace aiman
 
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
-        defformatstring(msg, "bot limit is now %d", botlimit);
+        defformatstring(msg, "Limit of maximal \f3connectable \f7bots is \f4%d \f7now.", botlimit);
         sendservmsg(msg);
     }
 
@@ -262,7 +266,7 @@ namespace aiman
         if(ci && !ci->local && !ci->privilege) return;
         botbalance = balance ? 1 : 0;
         dorefresh = true;
-        defformatstring(msg, "bot team balancing is now %s", botbalance ? "enabled" : "disabled");
+        defformatstring(msg, "Bot team \f3balancing \f7is now \f4%s\f7.", botbalance ? "enabled" : "disabled");
         sendservmsg(msg);
     }
 

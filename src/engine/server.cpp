@@ -346,8 +346,8 @@ void disconnect_client(int n, int reason)
     server::clientdisconnect(n);
     const char *msg = disconnectreason(reason);
     string s;
-    if(msg) formatstring(s, "client (%s) disconnected because: %s", ((server::clientinfo *)(clients[n]->info))->name, msg);
-    else formatstring(s, "client (%s) disconnected", ((server::clientinfo *)(clients[n]->info))->name);
+    if(msg) formatstring(s, "Client \f3(%s) \f7is disconnected because: \f4%s", ((server::clientinfo *)(clients[n]->info))->name, msg);
+    else formatstring(s, "Client \f3(%s) \f7is \f4disconnected\f7.", ((server::clientinfo *)(clients[n]->info))->name);
     logoutf("%s", s);
 
     delclient(clients[n]);
@@ -1131,7 +1131,7 @@ void initserver(bool listen, bool dedicated)
     if(dedicated)
     {
 #ifdef WIN32
-        setupwindow("Cube 2: Sauerbraten server");
+        setupwindow("Cube 2: Sauerbraten Goldmod Server");
 #endif
     }
 

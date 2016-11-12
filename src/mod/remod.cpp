@@ -1,6 +1,7 @@
 /*
 * remod:    remod.cpp
-* date:     2007
+* date:     2007/2016
+* Author:   degrave/BudSpencer
 *
 * some routines
 */
@@ -594,7 +595,7 @@ void setmaster(clientinfo *ci, int priv)
     if(ci->privilege != PRIV_NONE)
     {
         name = privname(ci->privilege);
-        formatstring(msg, "%s relinquished %s", colorname(ci), name);
+        formatstring(msg, "Player \f3%s \f7has relinquished \f4%s\f7.", colorname(ci), name);
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, 0, "", "", "");
     }
@@ -630,7 +631,7 @@ void setmaster(clientinfo *ci, int priv)
     if(ci->privilege != PRIV_NONE)
     {
         name = privname(ci->privilege);
-        formatstring(msg, "%s claimed %s", colorname(ci), name);
+        formatstring(msg, "Player \f3%s \f7has claimed \f4%s\f7.", colorname(ci), name);
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, "", "", "");
     }

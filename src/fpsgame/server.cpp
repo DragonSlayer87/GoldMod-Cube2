@@ -4,6 +4,8 @@
 #include "commandev.h"
 #include "fpsgame.h"
 #include "remod.h"
+#include "commandhandler.h"
+#include "banlist.h"
 
 namespace game
 {
@@ -717,7 +719,7 @@ namespace server
         char *timestr = ctime(&t), *trim = timestr + strlen(timestr);
         while(trim>timestr && iscubespace(*--trim)) *trim = '\0';
         formatstring(d.info, "%s: %s, %s, %.2f%s", timestr, modename(gamemode), smapname, len > 1024*1024 ? len/(1024*1024.f) : len/1024.0f, len > 1024*1024 ? "MB" : "kB");
-        sendservmsgf("demo \"%s\" recorded", d.info);
+        sendservmsgf("Server has \f3recorded \f7demo \f4\"%s\"\f7.", d.info);
         d.data = new uchar[len];
         d.len = len;
         demotmp->seek(0, SEEK_SET);
@@ -815,7 +817,7 @@ namespace server
         // remod
         remod::onevent(ONRECORDDEMO, "");
 
-        sendservmsg("recording demo");
+        sendservmsg("Server \f3records \f7a \f4demo\f7.");
 
         demorecord = f;
 
@@ -852,13 +854,13 @@ namespace server
         {
             loopv(demos) delete[] demos[i].data;
             demos.shrink(0);
-            sendservmsg("cleared all demos");
+            sendservmsg("Server has \f3cleared \f7all \f4demo\f7.");
         }
         else if(demos.inrange(n-1))
         {
             delete[] demos[n-1].data;
             demos.remove(n-1);
-            sendservmsgf("cleared demo %d", n);
+            sendservmsgf("Server has \f3removed \f7demo \f4%d\f7.", n);
         }
     }
 
@@ -900,7 +902,7 @@ namespace server
 
         loopv(clients) sendf(clients[i]->clientnum, 1, "ri3", N_DEMOPLAYBACK, 0, clients[i]->clientnum);
 
-        sendservmsg("demo playback finished");
+        sendservmsg("Server has \f3finished \f7demo \f4playback\f7.");
 
         loopv(clients) sendwelcome(clients[i]);
     }
@@ -919,8 +921,8 @@ namespace server
         else
         {
             lilswap(&hdr.version, 2);
-            if(hdr.version!=DEMO_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of Cube 2: Sauerbraten", file, hdr.version<DEMO_VERSION ? "older" : "newer");
-            else if(hdr.protocol!=PROTOCOL_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of Cube 2: Sauerbraten", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer");
+            if(hdr.version!=DEMO_VERSION) formatstring(msg, "Demo \f3\"%s\" \f7requires an \f4%s \f7version of \f4Cube 2: Sauerbraten\f7.", file, hdr.version<DEMO_VERSION ? "older" : "newer");
+            else if(hdr.protocol!=PROTOCOL_VERSION) formatstring(msg, "Demo \f3\"%s\" \f7requires an \f4%s \f7version of \f4Cube 2: Sauerbraten\f7.", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer");
         }
         if(msg[0])
         {
@@ -929,7 +931,7 @@ namespace server
             return;
         }
 
-        sendservmsgf("playing demo \"%s\"", file);
+        sendservmsgf("Server's \f3playing \f7demo \f4\"%s\"\f7.", file);
 
         demomillis = 0;
         sendf(-1, 1, "ri3", N_DEMOPLAYBACK, 1, -1);
@@ -1118,17 +1120,17 @@ namespace server
             {
                 if(ci->state.state==CS_SPECTATOR)
                 {
-                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators may not claim master.");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators can't \f3claim \f7master here. Unspectate \f4yourself \f7and try again.");
                     return false;
                 }
                 loopv(clients) if(ci!=clients[i] && clients[i]->privilege)
                 {
-                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Master is already claimed.");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "You can't claim \f3privileges \f7here because master is already \f4claimed\f7.");
                     return false;
                 }
                 if(!authname && !(mastermask&MM_AUTOAPPROVE) && !ci->privilege && !ci->local)
                 {
-                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires you to use the \"/auth\" command to claim master.");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires you to use the \f3\"/auth <domain>\" \f7command to claim \f4master\f7.");
                     return false;
                 }
             }
@@ -1153,10 +1155,10 @@ namespace server
         string msg;
         if(val && authname)
         {
-            if(authdesc && authdesc[0]) formatstring(msg, "%s claimed %s as '\fs\f5%s\fr' [\fs\f0%s\fr]", colorname(ci), name, authname, authdesc);
-            else formatstring(msg, "%s claimed %s as '\fs\f5%s\fr'", colorname(ci), name, authname);
+            if(authdesc && authdesc[0]) formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f5%s\fr'. \f7[Domain: \fs\f4%s\fr]", colorname(ci), name, authname, authdesc);
+            else formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'\f7.", colorname(ci), name, authname);
         }
-        else formatstring(msg, "%s %s %s", colorname(ci), val ? "claimed" : "relinquished", name);
+        else formatstring(msg, "Player \f3%s \f7has %s \f4%s\f7.", colorname(ci), val ? "claimed" : "relinquished", name);
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         putint(p, N_SERVMSG);
         sendstring(msg, p);
@@ -1188,8 +1190,15 @@ namespace server
         if((priv || ci->local) && ci->clientnum!=victim)
         {
             clientinfo *vinfo = (clientinfo *)getclientinfo(victim);
-            if(vinfo && vinfo->connected && (priv >= vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
+            if(vinfo && vinfo->connected && (priv > vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
             {
+                if ( priv == PRIV_MASTER )
+                {
+                    int cn = (int)ci->clientnum;
+                    sendf(cn, 1, "ris", N_SERVMSG, "You can't \f3kick \f7a player if you just've \f4master \f7privileges." );
+                    return false;
+                }
+                
                 if(trial) return true;
                 string kicker;
                 if(authname)
@@ -1198,8 +1207,8 @@ namespace server
                     else formatstring(kicker, "%s as '\fs\f5%s\fr'", colorname(ci), authname);
                 }
                 else copystring(kicker, colorname(ci));
-                if(reason && reason[0]) sendservmsgf("%s kicked %s because: %s", kicker, colorname(vinfo), reason);
-                else sendservmsgf("%s kicked %s", kicker, colorname(vinfo));
+                if(reason && reason[0]) sendservmsgf("Player \f3%s \f7kicked Player \f4%s \f7because: \f4%s", kicker, colorname(vinfo), reason);
+                else sendservmsgf("Player \f3%s \f7kicked Player \f4%s\f7.", kicker, colorname(vinfo));
                 uint ip = getclientip(victim);
 
                 //Remod
@@ -1834,7 +1843,7 @@ namespace server
             if(demorecord) enddemorecord();
             if(best && (best->count > (force ? 1 : maxvotes/2)))
             {
-                sendservmsg(force ? "vote passed by default" : "vote passed by majority");
+                sendservmsg(force ? "The \f3map \f7was changed by \f4server \f7automatically." : "The \f3mayority \f7has decided to play this \f4map\f7.");
                 changemap(best->map, best->mode);
             }
             else rotatemap(true);
@@ -1851,7 +1860,7 @@ namespace server
             if(idx < 0) return;
             map = maprotations[idx].map;
         }
-        if(hasnonlocalclients()) sendservmsgf("local player forced %s on map %s", modename(mode), map[0] ? map : "[new map]");
+        if(hasnonlocalclients()) sendservmsgf("Local \f3player \f7forced \f4%s \f7on map \f4%s\f7.", modename(mode), map[0] ? map : "[new map]");
         changemap(map, mode);
     }
 
@@ -1869,7 +1878,7 @@ namespace server
         }
         if(lockmaprotation && !ci->local && ci->privilege < (lockmaprotation > 1 ? PRIV_ADMIN : PRIV_MASTER) && findmaprotation(reqmode, map) < 0)
         {
-            sendf(sender, 1, "ris", N_SERVMSG, "This server has locked the map rotation.");
+            sendf(sender, 1, "ris", N_SERVMSG, "This server has a \f3locked \f7map rotation. You can't \f4vote \f7for maps.");
             return;
         }
         copystring(ci->mapvote, map);
@@ -1878,7 +1887,7 @@ namespace server
         {
             if(demorecord) enddemorecord();
             if(!ci->local || hasnonlocalclients())
-                sendservmsgf("%s forced %s on map %s", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
+                sendservmsgf("Player \f3%s \f7forced \f4%s \f7on map \f4%s\f7.", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
             changemap(ci->mapvote, ci->modevote);
         }
         else
@@ -1886,7 +1895,7 @@ namespace server
             // remod
             remod::onevent(ONMAPVOTE, "isi", sender, map, reqmode);
 
-            sendservmsgf("%s suggests %s on map %s (select map to vote)", colorname(ci), modename(reqmode), map[0] ? map : "[new map]");
+            sendservmsgf("Player \f3%s \f7suggests \f7%s \f7on map \f4%s\f7. (select map to vote)", colorname(ci), modename(reqmode), map[0] ? map : "[new map]");
             checkvotes();
         }
     }
@@ -1986,7 +1995,7 @@ namespace server
 
             // remod
             if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
-            if(onteamkill)  remod::onevent(ONTEAMKILL, "i", actor->clientnum);
+            if(onteamkill)  remod::onevent(ONTEAMKILL, "ii", actor->clientnum, target->clientnum);
             if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
             if(onsuicide)
             {
@@ -2319,7 +2328,7 @@ namespace server
         {
             clientinfo *ci = clients[i];
             if(ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc >= 0 || (req < 0 && ci->warned)) continue;
-            formatstring(msg, "%s has modified map \"%s\"", colorname(ci), smapname);
+            formatstring(msg, "Player \f3%s \f7has modified map \f4\"%s\"\f7.", colorname(ci), smapname);
             sendf(req, 1, "ris", N_SERVMSG, msg);
             if(req < 0) ci->warned = true;
 
@@ -2333,7 +2342,7 @@ namespace server
             {
                 clientinfo *ci = clients[j];
                 if(ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || !ci->clientmap[0] || ci->mapcrc != info.crc || (req < 0 && ci->warned)) continue;
-                formatstring(msg, "%s has modified map \"%s\"", colorname(ci), smapname);
+                formatstring(msg, "Player \f3%s \f7has modified map \f4\"%s\"\f7.", colorname(ci), smapname);
                 sendf(req, 1, "ris", N_SERVMSG, msg);
                 if(req < 0) ci->warned = true;
             }
@@ -2641,9 +2650,9 @@ namespace server
         if(mapdata) DELETEP(mapdata);
         if(!len) return;
         mapdata = opentempfile("mapdata", "w+b");
-        if(!mapdata) { sendf(sender, 1, "ris", N_SERVMSG, "failed to open temporary file for map"); return; }
+        if(!mapdata) { sendf(sender, 1, "ris", N_SERVMSG, "Failed to \f3open \f7temporary file for \f4map\f7."); return; }
         mapdata->write(data, len);
-        sendservmsgf("[%s sent a map to server, \"/getmap\" to receive it]", colorname(ci));
+        sendservmsgf("Player \f3%s \f7uploaded a map to server, \f4\"/getmap\" \f7to receive it.", colorname(ci));
 
         // remod
         remod::onevent(ONRECEIVEMAP, "i", sender);
@@ -3279,7 +3288,7 @@ namespace server
                     }
                     else
                     {
-                        defformatstring(s, "mastermode %d is disabled on this server", mm);
+                        defformatstring(s, "Mastermode \f3%d \f7is \f4disabled \f7on this server.", mm);
                         sendf(sender, 1, "ris", N_SERVMSG, s);
                     }
                 }
@@ -3291,7 +3300,7 @@ namespace server
                 if(ci->privilege || ci->local)
                 {
                     bannedips.shrink(0);
-                    sendservmsg("cleared all bans");
+                    sendservmsg("Server has \f3cleared \f7all \f4bans\f7.");
 
                     // remod
                     remod::onevent(ONCLEARBANS, "i", sender);
@@ -3358,11 +3367,11 @@ namespace server
                 if(ci->privilege < (restrictdemos ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
                 if(!maxdemos || !maxdemosize)
                 {
-                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "the server has disabled demo recording");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This \f3server \f7has disabled \f4demo \f7recording.");
                     break;
                 }
                 demonextmatch = val!=0;
-                sendservmsgf("demo recording is %s for next match", demonextmatch ? "enabled" : "disabled");
+                sendservmsgf("Demo recording is \f3%s \f7for next \f4match\f7.", demonextmatch ? "enabled" : "disabled");
                 break;
             }
 
@@ -3395,11 +3404,11 @@ namespace server
             }
 
             case N_GETMAP:
-                if(!mapdata) sendf(sender, 1, "ris", N_SERVMSG, "no map to send");
-                else if(ci->getmap) sendf(sender, 1, "ris", N_SERVMSG, "already sending map");
+                if(!mapdata) sendf(sender, 1, "ris", N_SERVMSG, "Here's no \f3map \7to send to \f4you\f7.");
+                else if(ci->getmap) sendf(sender, 1, "ris", N_SERVMSG, "Server's already \f3sending \f7the map to \f4you\f7.");
                 else
                 {
-                    sendservmsgf("[%s is getting the map]", colorname(ci));
+                    sendservmsgf("Player \f3%1 \f7is getting the \f4map\f7.", colorname(ci));
                     if((ci->getmap = sendfile(sender, 2, mapdata, "ri", N_SENDMAP)))
                         ci->getmap->freeCallback = freegetmap;
                     ci->needclipboard = totalmillis ? totalmillis : 1;

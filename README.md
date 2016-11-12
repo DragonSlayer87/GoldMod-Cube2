@@ -14,12 +14,16 @@ Goldmod is an advanced server modification based on remod.
 
 - irc-bot
 - cubescript
+- geoip country, geoip city, (geoip region is in work)
 - about 80 commands
 - anticheat (experimental)
 - many useful scripts for server 
 - scoreboard (sqlite3 + mysql)
 - remote control
 - user system (ip + password)
+- cross platform (windows, linux, mac, bsd, arch, ...) 
+- duel mode
+- possibility to rename bots (ainame in server-init)
 
 and very much more ...
 
@@ -27,7 +31,8 @@ and very much more ...
 
 **Command Reference:**
 
-Some useful Commands: 
+    Some useful Commands:
+    _____________________
 
     #help - show server command list
     #setpriv - set privilege of specified player
@@ -54,21 +59,31 @@ Some useful Commands:
 
 **Installation:**
 
-For Windows: *** Installation for Windows is quite easy ***
-
-      1.    Download Mod ( it would be an .zip package - you need 7zip or winrar to decompress it or just use windows-owned archive manager )
-      2.    Open "server-init.cfg" and setup all required lines like your wishes
-      3.    Close and save "server-init.cfg" file
-      4.    Then start "GoldMod.exe" or "GoldMod.bat" 
-      4.1   Just look at the taskbar near by the digital clock down right corner, there's an sauerbraten-similar icon, right click to it, click to "Open Console" to show server console or "Exit" for shutdown server
-      4.1.1 If you use GoldMod.bat you need to close opened console and server console too, otherwise it will keep running
-      5.    Server is running now. Connect to "log/" directory to show server log ( serverlog.gmsl )
-      6.    Congratulations! You successfully set up your own server. ;D Have fun
-
-      PS: To edit CubeScript Part of mod to to "scripts/" directory
-      PPS: To edit source code, open "GoldMod.cbp" ( you need Code::Blocks )
-      PPPS: Thanks to degrave for helping me with source ;)
-      PPPPS: For linux and mac installation just follow remod instuctions, they are same
+    0. First you need to make sure, you've the following packages installed:
+    
+        - gcc (install all)
+        - mingw-w64-zlib (for cross-compile)
+        - mingw-w64-sqlite (for cross-compile)
+        - zlib (for both)
+        - sqlite (for both)
+        - automake (for both)
+        - autotools (for both)
+        - libtool (for both)
+        
+    1. Download and unpack latest git repository (git clone https://www.github.com/budspencer1/GoldMod-Cube2.git)
+    2. type in console: cd GoldMod-Cube2 (connects to GoldMod-Cube2 repository)
+    3. type in console: cd src (connects you to src/ directory)
+    (4. Clean it: make clean (cleans archive))
+    5.0 Build it for Linux: make (compiles GoldMod)
+    5.1 Build it for Windows: make -f Makefile.win32 (executes src/Makefile.win32 to cross-compile from linux to windows)
+    6. Clean it again: make clean
+    If you did it as i described, a "remod64" or a "GoldModServer.exe" in GoldMod-Cube2 main directory
+    To run Linux Server: cd GoldMod-Cube2 
+                         ./Goldmod64
+    To run Windows Server: go to mod archive
+                           start GoldModServer.exe
+   
+   PS: DON'T FORGET TO SETUP SERVER. Just rename "server-init.cfg.default" to "server-init.cfg" and setup server with that file. Save and close it and start server.
 
 -------------------------------------------------------------------------------------------------------------
 
@@ -85,7 +100,3 @@ For Windows: *** Installation for Windows is quite easy ***
 If you suspect any bugs and problems, likes and dislikes message me on IRC, E-Mail or talk with me ingame, I'm always listening. New Ideas for some features are desired ;), but no insulting about anything, I don't waste time with random noobs. 
 
 -------------------------------------------------------------------------------------------------------------
-
-**Last Word:**
-
-HAVE FUN WITH THE MOD!!!! :D

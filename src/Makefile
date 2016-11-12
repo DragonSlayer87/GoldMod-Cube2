@@ -41,7 +41,7 @@ ifneq (,$(findstring amd64,$(shell uname -a)))
 PLATFORM_SUFFIX=64
 endif
 
-SERVER_PREFIX=remod
+SERVER_PREFIX=GoldMod
 SERVER_NAME=$(SERVER_PREFIX)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_NAME=$(SERVER_NAME)$(PLATFORM_SUFFIX).exe
@@ -112,7 +112,7 @@ ifeq ($(USE_GEOIP),true)
 override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.5.1\"
 override INCLUDES+= -Imod/libGeoIP/
 override SERVER_OBJS+= \
-        mod/geoipmod2-standalone.o \
+        mod/geoipmod-standalone.o \
 	mod/libGeoIP/GeoIP-standalone.o \
 	mod/libGeoIP/GeoIPCity-standalone.o \
         mod/libGeoIP/GeoIP_depreciated-standalone.o
