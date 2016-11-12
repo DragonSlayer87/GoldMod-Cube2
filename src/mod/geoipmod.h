@@ -1,3 +1,12 @@
+/*
+* File Name: geoipmod.h
+* Date: 2016
+* Author: BudSpencer
+* 
+* geoip functions
+*/
+
+
 #ifndef __GEOIPMOD_H__
 #define __GEOIPMOD_H__
 
@@ -35,7 +44,7 @@ namespace remod
         {
             if(gi == NULL) return false; else return true;
         }
-
+        
         const char *getcountry(char *host)
         {
             if(loaded())
@@ -48,6 +57,16 @@ namespace remod
                 return NULL;
             }
         }
+        
+        const char *getcountrycode(const char *address)
+        {
+            const char *country_code = NULL;
+            country_code = GeoIP_country_code_by_addr(gi, address);
+            return country_code;
+        };
+        
+        void getregion(const char *address);
+        const char *getregioncode( const char *addr );
         
     };
         const char *getcity(const char *addr);

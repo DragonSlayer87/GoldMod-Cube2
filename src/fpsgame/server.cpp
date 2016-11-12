@@ -1994,7 +1994,7 @@ namespace server
             // ts.respawn();
 
             // remod
-            if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
+            if(onfrag)      remod::onevent(ONFRAG,     "ii", actor->clientnum, target->clientnum);
             if(onteamkill)  remod::onevent(ONTEAMKILL, "ii", actor->clientnum, target->clientnum);
             if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
             if(onsuicide)
@@ -2375,7 +2375,7 @@ namespace server
     {
         sendf(ci->clientnum, 1, "ri5ss", N_SERVINFO, ci->clientnum, PROTOCOL_VERSION, ci->sessionid, serverpass[0] ? 1 : 0, serverdesc, serverauth);
     }
-
+        
     void noclients()
     {
         // remod

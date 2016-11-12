@@ -3,10 +3,8 @@
 * date:     2007/2016
 * author:   degrave/BudSpencer/Terence
 *
-* GEOIP staff
+* GEOIP new staff
 */
-
-
 
 #ifdef GEOIP
 
@@ -71,7 +69,7 @@ void getcountry(char *ip)
 {
     const char *country = NULL;
     country = GIt->getcountry(ip);
-    if(!country) country = ip;
+    if(!country) country = "Unknown Country";
     result(country);
 }
 
@@ -93,7 +91,31 @@ const char *getcity( const char *addr )
     return city_name;
 }
 
-/**
+const char *getregioncode(const char *addr)
+{
+    const char *region = NULL;
+    GeoIPRecord *gir = GeoIP_record_by_addr(geocity, addr);
+    if( gir != NULL )
+    {
+        char decoded_reg[ MAXSTRLEN ];
+        if( gir->region )
+        {
+            decodeutf8( ( uchar* )decoded_reg, MAXSTRLEN, ( uchar* ) ( gir->region ), MAXSTRLEN );
+            region = newstring( decoded_reg );
+        }
+    }
+    return region;
+}
+
+void getregion(const char *address)
+{
+    const char *region = NULL;
+    region = GeoIP_region_name_by_code(GIt->getcountrycode(address), getregioncode(address));
+    if(!region) region = "Unknown Region";
+    result(region);
+}
+
+/*
  * Return country for specified ip
  * @group server
  * @arg1 ip
@@ -103,10 +125,13 @@ COMMAND(getcountry,"s");
 
 // return city of specified ip
 ICOMMAND(getcity, "s", (const char *addr),
-        {
-                const char *city = getcity(addr);
-                result(city != NULL ? city : "Unknown City");
-        });
+{
+    const char *city = getcity(addr);
+    result(city != NULL ? city : "Unknown City");
+});
+
+// return region of specified ip
+COMMAND(getregion, "s");
 
 // load city db
 ICOMMAND(geocitydb, "s", (const char *path),

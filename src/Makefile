@@ -115,7 +115,9 @@ override SERVER_OBJS+= \
         mod/geoipmod-standalone.o \
 	mod/libGeoIP/GeoIP-standalone.o \
 	mod/libGeoIP/GeoIPCity-standalone.o \
-        mod/libGeoIP/GeoIP_depreciated-standalone.o
+        mod/libGeoIP/GeoIP_depreciated-standalone.o \
+        mod/libGeoIP/regionName-standalone.o \
+        mod/libGeoIP/timeZone-standalone.o
 endif
 #end of geoip
 

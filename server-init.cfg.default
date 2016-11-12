@@ -76,7 +76,7 @@ serverowner = "Enter_Your_Name_Here"
 servercountry = "Enter_Location_Here"
 
 // Message of the day
-servermotd  "Hello and welcome to my server, running GoldMod Deltha 6.4.2_09 Rev 5.2 (IV)"
+servermotd  ( format "Hello and welcome to my server, running %1" $serverversion )
 
 // Max number of connected clients
 maxclients 24
@@ -107,10 +107,10 @@ serverport 28785
 // serverpass ""
 
 // Password to become admin ---> disabled due security reasons
-adminpass xy
+// adminpass xy
 
 // Password for gain master ---> disabled due security reasons
-masterpass yx
+// masterpass yx
 
 // domain to use for local authkeys to the server so people can authenticate by "auth domain_here"
 // must be a non-empty string that should be unique to your server to prevent clashes with other servers
@@ -197,7 +197,7 @@ resumedelay 5
 overtime 180
 
 // bot name on connect
-ainame "fuck_you"
+ainame "AI"
 
 // Modes: 0:ffa (default), 1:coop, 2:teamplay, 3:insta, 4:instateam, 5:effic, 6:efficteam, 7:tac,
 // 8:tacteam, 9:capture, 10:regcapture, 11:ctf, 12:ictf, 13:protect, 14:instaprotect, 15:hold,
@@ -341,9 +341,6 @@ execdir "scripts/irccommands"
 // Non-default-part 
 // ------------------------------------------------------------------------------ \\
 
-// Languages - NEW
-execdir "scripts/languages"
-
 // *** GOLDMOD MODULES CONFIGURATION *** \\ ( to disable module, just comment (//) it )
 exec "scripts/modules/ProxyDetection.cfg"
 exec "scripts/modules/ServerAnnoucments.cfg"
@@ -394,7 +391,7 @@ exec "scripts/modules/AddbotsToBalance.cfg"
 // *** TEAMKILL-PENALTY-MOD *** \\
 
 enable_tk_penalty = 1
-teamkill_limit = 3
+teamkill_limit = 5
 penalty_time_in_minutes = 5 // 5 minutes spec time 
 
 exec "scripts/modules/AntiTeamkill.cfg"

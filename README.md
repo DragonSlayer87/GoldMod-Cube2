@@ -12,9 +12,11 @@ Goldmod is an advanced server modification based on remod.
 
 ** Features:**
 
+- very good UI
+- very userfriendly
 - irc-bot
 - cubescript
-- geoip country, geoip city, (geoip region is in work)
+- geoip country, geoip city, geoip region
 - about 80 commands
 - anticheat (experimental)
 - many useful scripts for server 
@@ -23,7 +25,7 @@ Goldmod is an advanced server modification based on remod.
 - user system (ip + password)
 - cross platform (windows, linux, mac, bsd, arch, ...) 
 - duel mode
-- possibility to rename bots (ainame in server-init)
+- possibility to rename bots ("ainame" in server-init)
 
 and very much more ...
 
@@ -51,9 +53,10 @@ and very much more ...
 
 **Work in Process:**
 
-    enable-disable-commands-system ( currently not in work )
-    MixModule ( currently not in work )
-    Clantag Detection ( in work )
+    enable-disable-commands-system (currently not in work)
+    MixModule (currently not in work)
+    Clantag Detection (in work)
+    GeoIP TimeZone (in work)
 
 -------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +64,7 @@ and very much more ...
 
     0. First you need to make sure, you've the following packages installed:
     
+        - mingw-w64 (cross-compiler -> for cross-compile)
         - gcc (install all)
         - mingw-w64-zlib (for cross-compile)
         - mingw-w64-sqlite (for cross-compile)
@@ -76,16 +80,28 @@ and very much more ...
     (4. Clean it: make clean (cleans archive))
     5.0 Build it for Linux: make (compiles GoldMod)
     5.1 Build it for Windows: make -f Makefile.win32 (executes src/Makefile.win32 to cross-compile from linux to windows)
-    6. Clean it again: make clean
+    (6. Clean it again: make clean)
     If you did it as i described, a "remod64" or a "GoldModServer.exe" in GoldMod-Cube2 main directory
     To run Linux Server: cd GoldMod-Cube2 
-                         ./Goldmod64
+                            ./Goldmod64
     To run Windows Server: go to mod archive
                            start GoldModServer.exe
    
    PS: DON'T FORGET TO SETUP SERVER. Just rename "server-init.cfg.default" to "server-init.cfg" and setup server with that file. Save and close it and start server.
+   PPS: You don't need to do Step 4 and 6. This command just clean your mod archive from the while compiling generated .o files
 
 -------------------------------------------------------------------------------------------------------------
+
+**Update your Server-Mod:""
+
+    1. Open Terminal Shell
+    2. type in: cd GoldMod-Cube2
+    3. type in: git pull
+    
+    4. Build it: cd src
+    5. Start Compiler: make (for cross-compile: make -f Makefile.win32)
+    
+------------------------------------------------------------------------------------------------------------- 
 
 **Contact:**
 
@@ -97,6 +113,6 @@ and very much more ...
 
 **Bug Reports:**
 
-If you suspect any bugs and problems, likes and dislikes message me on IRC, E-Mail or talk with me ingame, I'm always listening. New Ideas for some features are desired ;), but no insulting about anything, I don't waste time with random noobs. 
+If you suspect any bugs and problems, likes and dislikes message me on IRC, E-Mail or talk with me ingame, I'm always listening. New Ideas for some features are desired ;), but no insulting anything offensive, I don't waste time with random noobs. 
 
 -------------------------------------------------------------------------------------------------------------

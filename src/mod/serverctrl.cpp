@@ -1387,7 +1387,7 @@ ICOMMAND(addbot, "i", (int *s), aiman::addai(*s, -1));
  * Delete last added bot
  * @group server
  */
-ICOMMAND(delbot, "", (), aiman::deleteai());
+ICOMMAND(delbot, "i", (), aiman::deleteai());
 
 /**
  * Send server message (for all players to see)
