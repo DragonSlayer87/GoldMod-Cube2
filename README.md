@@ -86,9 +86,9 @@ and very much more ...
                             ./Goldmod64
     To run Windows Server: go to mod archive
                            start GoldModServer.exe
-   
-   PS: DON'T FORGET TO SETUP SERVER. Just rename "server-init.cfg.default" to "server-init.cfg" and setup server with that file. Save and close it and start server.
-   PPS: You don't need to do Step 4 and 6. This command just clean your mod archive from the while compiling generated .o files
+  
+    PS: DON'T FORGET TO SETUP SERVER. Just rename "server-init.cfg.default" to "server-init.cfg" and setup server with that file. Save and close it and start server.
+    PPS: You don't need to do Step 4 and 6. This command just clean your mod archive from the while compiling generated .o files
 
 -------------------------------------------------------------------------------------------------------------
 
