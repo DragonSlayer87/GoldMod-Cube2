@@ -30,8 +30,10 @@ namespace server
 
     void filtercstext(char *str);
     bool checkpban(uint ip);
+    bool checkaskidban(uint ip);
     void addban(int cn, char* actorname, int expire);
     void addpban(char *name, const char *reason);
+    void addaskidban(char *name);
     void sendservmsgf(const char *fmt, ...);
 }
 
@@ -85,15 +87,20 @@ namespace remod
     int parseplayer(const char *arg);
     bool ismaster(int *cn);
     bool isadmin(int *cn);
+    bool isMaster(int *cn);
+    bool isAdmin(int *cn);
     bool isspectator(int *cn);
     bool isediting(int *cn);
     void concatpstring(char** str, const char *piece);
     void concatpstring(char** str, int count,  ...);
     void loadbans();
+    void loadaskidbans();
     void writebans();
+    void writeaskidbans();
     bool loadents(const char *fname, vector<entity> &ents, uint *crc);
     bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc);
     void setmaster(clientinfo *ci, int priv);
+    void userauth(clientinfo *ci, int priv);
     int getwepaccuracy(int cn, int gun);
     bool checkmutemode(clientinfo *ci);
     void pausegame(bool val, clientinfo *ci = NULL);

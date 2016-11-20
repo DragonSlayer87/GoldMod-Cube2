@@ -1,7 +1,7 @@
 /*
 * File Name: geoipmod.h
 * Date: 2016
-* Author: BudSpencer
+* Author: degrave/BudSpencer
 * 
 * geoip functions
 */
@@ -21,11 +21,13 @@ namespace remod
     {
         private:
         GeoIP *gi;
+        GeoIPLookup *gil;
 
         public:
         GeoIPtool()
         {
             gi = NULL;
+            gil = NULL;
         }
 
         ~GeoIPtool()
@@ -52,7 +54,8 @@ namespace remod
                 const char *name;
                 name = GeoIP_country_name_by_addr(gi, host);
                 return (char*)name;
-            } else
+            } 
+            else
             {
                 return NULL;
             }
@@ -63,12 +66,15 @@ namespace remod
             const char *country_code = NULL;
             country_code = GeoIP_country_code_by_addr(gi, address);
             return country_code;
-        };
+        }
         
         void getregion(const char *address);
+        void gettimezone(const char *address);
+        
         const char *getregioncode( const char *addr );
         
     };
         const char *getcity(const char *addr);
+
 }}
 #endif

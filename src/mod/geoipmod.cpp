@@ -1,9 +1,10 @@
 /*
 * remod:    geoip.cpp
 * date:     2007/2016
-* author:   degrave/BudSpencer/Terence
+* author:   BudSpencer/degrave/Terence
 *
-* GEOIP new staff
+* GEOIP new staff 
+* Contains functions to get ip's country, city, region and timezone
 */
 
 #ifdef GEOIP
@@ -22,6 +23,8 @@ namespace geoip {
     static GeoIP *geocity = NULL;
     
 GeoIPtool *GIt = new GeoIPtool();
+GeoIPLookup *gil = new GeoIPLookup();
+GeoIP *gi = new GeoIP();
 
 void loadgeoipcountry(char *dbname)
 {
@@ -49,8 +52,7 @@ void loadgeoipcity(const char *path, bool isgeocity)
         
         if(isgeocity)
             strcpy(dbtype, "geocity");
-        else
-            strcpy(dbtype, "geoip");
+        
         if(gi)
         {
             if(isgeocity)
@@ -78,7 +80,7 @@ const char *getcity( const char *addr )
     const char *city_name = NULL;
 
         GeoIPRecord *gir = GeoIP_record_by_addr( geocity, addr );
-            if( gir != NULL ) 
+        if( gir != NULL ) 
         {
             char decoded_city[ MAXSTRLEN ];
             if ( gir->city ) 
@@ -115,36 +117,66 @@ void getregion(const char *address)
     result(region);
 }
 
-/*
- * Return country for specified ip
+void gettimezone(const char *adress)
+{
+    const char *tz = NULL;
+    tz = GeoIP_time_zone_by_country_and_region(GIt->getcountrycode(adress), getregioncode(adress)); 
+    if(!tz) tz = "Unknown Timezone";
+    result(tz);
+}
+
+/**
+ * Return country for specified IP-Adress
  * @group server
  * @arg1 ip
  * @return country
  */
 COMMAND(getcountry,"s");
 
-// return city of specified ip
+/**
+ * Return city for specfied IP-Adress
+ * @group server
+ * @arg1 ip
+ * @return city
+ */
 ICOMMAND(getcity, "s", (const char *addr),
 {
     const char *city = getcity(addr);
     result(city != NULL ? city : "Unknown City");
 });
 
-// return region of specified ip
+/**
+ * Return region for specfied IP-Adress
+ * @group server
+ * @arg1 ip
+ * @return region
+ */
 COMMAND(getregion, "s");
 
-// load city db
-ICOMMAND(geocitydb, "s", (const char *path),
-             {
-                 loadgeoipcity(path, true);
-             });
+/**
+ * Return timezone for specified IP-Adress
+ * @group server
+ * @arg1 ip
+ * @return timezone
+ */
+COMMAND(gettimezone, "s");
 
 /**
- * Load geoip database from specified path
+ * Load geoipcity database from specified path
  * @group server
- * @arg1 /path/to/geoip.db
+ * @arg1 /path/to/geoipcity.db
  */
-COMMANDN(geodb, loadgeoipcountry, "s");
+ICOMMAND(geocitydb, "s", (const char *path),
+{
+    loadgeoipcity(path, true);
+});
+
+/**
+ * Load geoipcountry database from specified path
+ * @group server
+ * @arg1 /path/to/geoipcountry.db
+ */
+COMMANDN(geocountrydb, loadgeoipcountry, "s");
 
 
 /**

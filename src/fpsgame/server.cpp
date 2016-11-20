@@ -1994,15 +1994,16 @@ namespace server
             // ts.respawn();
 
             // remod
-            if(onfrag)      remod::onevent(ONFRAG,     "ii", actor->clientnum, target->clientnum);
+            if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
             if(onteamkill)  remod::onevent(ONTEAMKILL, "ii", actor->clientnum, target->clientnum);
-            if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
+            if(ondeath)     remod::onevent(ONDEATH,    "ii", target->clientnum, actor->clientnum);
             if(onsuicide)
             {
                 remod::addSuicide(target);
                 remod::onevent(ONSUICIDE,  "i", target->clientnum);
             }
         }
+        remod::onevent(ONHIT, "ii", actor->clientnum, target->clientnum);
     }
 
     void suicide(clientinfo *ci)
@@ -2109,6 +2110,7 @@ namespace server
                 break;
             }
         }
+        remod::onevent( ONSHOT, "i", ci->clientnum );
     }
 
     void pickupevent::process(clientinfo *ci)
@@ -2467,7 +2469,7 @@ namespace server
                 // remod
                 remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
 
-                disconnect_client(ci->clientnum, DISC_IPBAN);
+                disconnect_client(ci->clientnum, DISC_GBAN);
             }
         }
     }
@@ -2485,10 +2487,11 @@ namespace server
         if(numclients(-1, false, true)>=maxclients) return DISC_MAXCLIENTS;
         uint ip = getclientip(ci->clientnum);
         loopv(bannedips) if(bannedips[i].ip==ip) return DISC_IPBAN;
-        if(checkgban(ip)) return DISC_IPBAN;
+        if(checkgban(ip)) return DISC_GBAN;
 
         // remod
         if(checkpban(ip)) return DISC_IPBAN;
+		if(checkaskidban(ip)) return DISC_ASKIDBAN;
 
         if(mastermode>=MM_PRIVATE && allowedips.find(ip)<0) return DISC_PRIVATE;
         return DISC_NONE;

@@ -1,3 +1,4 @@
+
 /*
 * remod:    serverctrl.cpp
 * date:     2007/2016
@@ -101,7 +102,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt, "Remod %s %s (build %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
+    formatstring(txt, "GoldMod %s %s (build: %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
@@ -683,7 +684,8 @@ void uptimef(const char *fmt)
 /**
  * converts string ip to integer value
  */
-int ip2int(char *ip) {
+int ip2int(char *ip)
+{
 	int i = 0;
 	for (int j = 0; j < 4; j++) {
 		short ioctet;
@@ -711,7 +713,8 @@ int ip2int(char *ip) {
 /**
  * convert integer value of ip to string
  */
-void int2ip(int *i) {
+void int2ip(int *i)
+{
 	string ip;
 	int ii = *i;
 	sprintf(ip, "%d.%d.%d.%d", (ii & 0xFF000000) >> 24, (ii & 0xFF0000) >> 16, (ii & 0xFF00) >> 8, ii & 0xFF);
@@ -1033,6 +1036,33 @@ void setpriv(int *cn, char *s)
     remod::setmaster(ci, priv);
 }
 
+void userpriv(int *cn, char *s)
+{
+    clientinfo *ci = (clientinfo *)getclientinfo(*cn);
+    if(!ci) return;
+
+    int priv = PRIV_NONE;
+
+    if(isdigit(s[0]))
+    {
+        priv = clamp(parseint(s), (int)PRIV_NONE, (int)PRIV_ADMIN);
+    }
+    else
+    {
+        switch(s[0])
+        {
+            case 'n': priv = PRIV_NONE; break;
+            case 'm': priv = PRIV_MASTER; break;
+            case 'a': priv = PRIV_ADMIN; break;
+            default: priv = PRIV_NONE;
+        }
+    }
+
+    if(priv == PRIV_AUTH) priv = PRIV_MASTER;
+
+    remod::userauth(ci, priv);
+}
+
 void getpos(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
@@ -1289,6 +1319,7 @@ ICOMMAND(getmastermodename, "i", (int *mm), result(mastermodename((int)*mm, "unk
  * @return 0 or 1
  */
 ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
+ICOMMAND(isMaster, "i", (int*cn), intret(isMaster(cn) ? 1 : 0));
 
 /**
  * Check if specified player is admin
@@ -1297,6 +1328,7 @@ ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
  * @return 0 or 1
  */
 ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
+ICOMMAND(isAdmin, "i", (int *cn), intret(isAdmin(cn) ? 1 : 0));
 
 /**
  * Check if specified player is spectator
@@ -1699,6 +1731,14 @@ COMMAND(int2ip, "i");
 COMMANDN(permban, addpban, "ss");
 
 /**
+ * add an askidban
+ * @group player
+ * @arg1 player's name
+ * @arg2 reason
+**/
+COMMANDN(askidban, addaskidban, "s");
+
+/**
  * Loop permanent bans list
  * @group player
  * @arg1 banned ip variable
@@ -1731,6 +1771,12 @@ COMMANDN(getextensions, getextensions, "");
  * @group server
  */
 COMMAND(writebans, "");
+
+/**
+ * Write askidbans to file
+ * @group server
+**/
+//COMMAND(writeaskidbans, "");
 
 /**
  * Returns values list items in the same order as sorted keys
@@ -1803,6 +1849,7 @@ COMMAND(listadd, "V");
  * @arg2 privelege: 0 or n - NONE, 1 or 2 or m - MASTER, 3 or a - ADMIN
  */
 COMMAND(setpriv, "is");
+COMMAND(userpriv, "is");
 
 /**
  * Get client position

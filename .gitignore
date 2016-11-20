@@ -3,4 +3,3 @@
 *.o
 *.db
 *.sqlite
-server-init.cfg

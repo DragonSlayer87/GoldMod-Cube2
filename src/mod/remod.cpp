@@ -137,6 +137,11 @@ namespace server
     {
         return bm->checkban(ip);
     }
+    
+    bool checkaskidban(uint ip)
+    {
+        return bm->checkaskidban(ip);
+    }
 
     // remod implementation of addban
     void addban(int cn, char* actorname, int expire)
@@ -183,6 +188,24 @@ namespace server
             {
                 remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
                 disconnect_client(ci->clientnum, DISC_IPBAN);
+            }
+        }
+    }
+    
+    void addaskidban(char *name)
+    {
+        enet_uint32 ip, mask;
+        bm->parseipstring(name, ip, mask);
+        bm->addaskidban(NULL, ip, mask, 0, time(0), "server", "askidban");
+
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(checkaskidban(getclientip(ci->clientnum)))
+            {
+                remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
+                disconnect_client(ci->clientnum, DISC_ASKIDBAN);
             }
         }
     }
@@ -344,10 +367,22 @@ bool ismaster(int *cn)
     return (ci && ci->privilege >= PRIV_MASTER);
 }
 
+bool isMaster(int *cn)
+{
+    clientinfo *ci = ( clientinfo *)getinfo((int)*cn);
+    return (ci && ci->privilege == PRIV_MASTER);
+}
+
 bool isadmin(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
     return (ci && ci->privilege >= PRIV_ADMIN);
+}
+
+bool isAdmin(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    return (ci && ci->privilege == PRIV_ADMIN);
 }
 
 bool isspectator(int *cn)
@@ -407,10 +442,16 @@ void concatpstring(char** str, const char *piece) {
 
 // Write permbans to disk
 SVAR(banfile, "permbans.cfg");
+SVAR(askidbanfile, "VPN_Ban/askidbans.cfg");
 
 void loadbans()
 {
     execfile(banfile);
+}
+
+void loadaskidbans()
+{
+	execfile(askidbanfile);
 }
 
 void writebans()
@@ -458,6 +499,41 @@ void writebans()
             }
             formatstring(maskedip, "%i.%i.%i.%i/%i", b->ipoctet[0], b->ipoctet[1], b->ipoctet[2], b->ipoctet[3], cidrmsk);
             f->printf("permban %s \"%s\"\n", maskedip, b->reason);
+        }
+
+        f->close();
+    }
+    else
+    {
+        conoutf("Can not open \"%s\" for writing bans", fname);
+    }
+}
+
+void writeaskidbans()
+{
+    const char *fname = findfile(askidbanfile, "w");
+    stream *f = openutf8file(fname, "w");
+
+    if(f)
+    {
+        string maskedip;
+
+        f->printf("// This file was generated automaticaly\n// Do not edit it while server running\n// This file stored askidbans\n\n");
+        loopv(bm->askidbanslist()->askidbanvec)
+        {
+            remod::banlist::baninfo *b = bm->askidbanslist()->askidbanvec[i];
+            maskedip[0] = '\0';
+
+            // generate masked ip (ex. 234.345.45.2/32)
+            enet_uint32 tmsk = ntohl(b->mask);
+            int cidrmsk = 0;
+            while(tmsk)
+            {
+                tmsk <<= 1;
+                cidrmsk++;
+            }
+            formatstring(maskedip, "%i.%i.%i.%i/%i", b->ipoctet[0], b->ipoctet[1], b->ipoctet[2], b->ipoctet[3], cidrmsk);
+            f->printf("askidban %s \"%s\"\n", maskedip, b->reason);
         }
 
         f->close();
@@ -634,6 +710,52 @@ void setmaster(clientinfo *ci, int priv)
         formatstring(msg, "Player \f3%s \f7has claimed \f4%s\f7.", colorname(ci), name);
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, "", "", "");
+    }
+
+    checkpausegame();
+}
+
+void userauth(clientinfo *ci, int priv)
+{
+    if(!ci || ci->privilege == priv) return;
+
+    priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ADMIN);
+    if(ci->privilege != PRIV_NONE)
+    {
+        remod::onevent(ONUSERAUTH, "iisss", ci->clientnum, 0, "", "", "");
+    }
+
+    ci->privilege = priv;
+
+    // check if anyone have priveledge
+    bool hasmaster = false;
+    bool modechanged = false;
+    loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+    if(!hasmaster)
+    {
+        mastermode = MM_OPEN;
+        allowedips.shrink(0);
+        modechanged = true;
+    }
+
+    // send list of priveledges
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, N_CURRENTMASTER);
+    putint(p, mastermode);
+    loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
+    {
+        putint(p, clients[i]->clientnum);
+        putint(p, clients[i]->privilege);
+    }
+    putint(p, -1);
+    sendpacket(-1, 1, p.finalize());
+
+    if(modechanged) remod::onevent(ONMASTERMODE, "ii", -1, mastermode);
+
+    // check if client get any privelge
+    if(ci->privilege != PRIV_NONE)
+    {
+        remod::onevent(ONUSERAUTH, "iisss", ci->clientnum, ci->privilege, "", "", "");
     }
 
     checkpausegame();

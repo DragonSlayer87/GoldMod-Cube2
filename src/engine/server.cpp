@@ -322,16 +322,18 @@ const char *disconnectreason(int reason)
 {
     switch(reason)
     {
-        case DISC_EOP: return "end of packet";
-        case DISC_LOCAL: return "server is in local mode";
-        case DISC_KICK: return "kicked/banned";
-        case DISC_MSGERR: return "message error";
-        case DISC_IPBAN: return "ip is banned";
-        case DISC_PRIVATE: return "server is in private mode";
-        case DISC_MAXCLIENTS: return "server FULL";
-        case DISC_TIMEOUT: return "connection timed out";
-        case DISC_OVERFLOW: return "overflow";
-        case DISC_PASSWORD: return "invalid password";
+        case DISC_EOP: return "End of Packet";
+        case DISC_LOCAL: return "Server is in Local Mode";
+        case DISC_KICK: return "Kicked/Banned";
+        case DISC_MSGERR: return "Message Error";
+        case DISC_IPBAN: return "IP is banned";
+        case DISC_PRIVATE: return "Server is in Private Mode";
+        case DISC_MAXCLIENTS: return "Server is FULL";
+        case DISC_TIMEOUT: return "Connection timed out";
+        case DISC_OVERFLOW: return "Buffer Overflow";
+        case DISC_PASSWORD: return "Invalid Password";
+		case DISC_GBAN: return "IP is gbanned";
+		case DISC_ASKIDBAN: return "Askidban";
         default: return NULL;
     }
 }
@@ -1160,6 +1162,7 @@ void initserver(bool listen, bool dedicated)
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
+    remod::loadaskidbans();
 
     server::serverinit();
 

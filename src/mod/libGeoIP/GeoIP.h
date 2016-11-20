@@ -362,7 +362,6 @@ GEOIP_API char *GeoIP_org_by_name_v6 (GeoIP* gi, const char *name);
 /* End deprecated */
 
 
-
 #
 #ifdef __cplusplus
 }

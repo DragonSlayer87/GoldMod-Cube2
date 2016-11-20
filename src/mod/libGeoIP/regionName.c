@@ -1811,33 +1811,33 @@ static const char * get_region_name_DE(int region_code)
     case 1:
         return "Baden-Wurttemberg";
     case 2:
-        return "Bayern";
+        return "Bavaria";
     case 3:
         return "Bremen";
     case 4:
         return "Hamburg";
     case 5:
-        return "Hessen";
+        return "Hesse";
     case 6:
-        return "Niedersachsen";
+        return "Lower Saxony";
     case 7:
-        return "Nordrhein-Westfalen";
+        return "Northrhine-Westphalia";
     case 8:
-        return "Rheinland-Pfalz";
+        return "Rhineland Palatinate";
     case 9:
         return "Saarland";
     case 10:
-        return "Schleswig-Holstein";
+        return "Schleswig Holstein";
     case 11:
         return "Brandenburg";
     case 12:
-        return "Mecklenburg-Vorpommern";
+        return "Mecklenburg Western Pomerania";
     case 13:
-        return "Sachsen";
+        return "Saxony";
     case 14:
-        return "Sachsen-Anhalt";
+        return "Saxony-Anhalt";
     case 15:
-        return "Thuringen";
+        return "Thuringia";
     case 16:
         return "Berlin";
     default:
