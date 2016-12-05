@@ -1902,6 +1902,8 @@ namespace server
 
     //remod
     VAR(imissiontime, 0, 10000, INT_MAX);
+    VAR(selfdamage,0,1,1);
+    VAR(teamdamage,0,1,1);
 
     void checkintermission()
     {
@@ -1934,6 +1936,22 @@ namespace server
 
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
+        // goldmod
+        // no self damage
+        if(actor==target)
+        {
+            if(!selfdamage)
+            {
+                damage=0;
+            }
+        }
+        // no team damage
+        if(m_teammode&&!teamdamage&&(strcmp(target->team,actor->team)!=-1))
+        {
+            damage=0;
+        }
+        // end of goldmod*
+        
         // remod
         if(m_edit && nodamage == 1) return;
         actor->state.ext.guninfo[gun].damage += damage;
@@ -2003,6 +2021,7 @@ namespace server
                 remod::onevent(ONSUICIDE,  "i", target->clientnum);
             }
         }
+        // goldmod
         remod::onevent(ONHIT, "ii", actor->clientnum, target->clientnum);
     }
 

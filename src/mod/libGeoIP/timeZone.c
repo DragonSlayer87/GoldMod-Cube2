@@ -1,4 +1,4 @@
-#include <string.h> 
+#include <string.h>
 const char* GeoIP_time_zone_by_country_and_region(const char * country,const char * region) {
     const char* timezone = NULL;
     if (country == NULL) {
@@ -35,11 +35,11 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Luanda";
     }
     if ( strcmp (country, "AQ") == 0 ) {
-        return "Antarctica/South_Pole";
+        return "Antarctica/South Pole";
     }
     if ( strcmp (country, "AR") == 0 ) {
         if ( strcmp (region, "01") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "02") == 0 ) {
             return "America/Argentina/Catamarca";
@@ -48,7 +48,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Argentina/Tucuman";
         }
         else if ( strcmp (region, "04") == 0 ) {
-            return "America/Argentina/Rio_Gallegos";
+            return "America/Argentina/Rio Gallegos";
         }
         else if ( strcmp (region, "05") == 0 ) {
             return "America/Argentina/Cordoba";
@@ -57,10 +57,10 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Argentina/Tucuman";
         }
         else if ( strcmp (region, "07") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "08") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "09") == 0 ) {
             return "America/Argentina/Tucuman";
@@ -69,37 +69,37 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Argentina/Jujuy";
         }
         else if ( strcmp (region, "11") == 0 ) {
-            return "America/Argentina/San_Luis";
+            return "America/Argentina/San Luis";
         }
         else if ( strcmp (region, "12") == 0 ) {
-            return "America/Argentina/La_Rioja";
+            return "America/Argentina/La Rioja";
         }
         else if ( strcmp (region, "13") == 0 ) {
             return "America/Argentina/Mendoza";
         }
         else if ( strcmp (region, "14") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "15") == 0 ) {
-            return "America/Argentina/San_Luis";
+            return "America/Argentina/San Luis";
         }
         else if ( strcmp (region, "16") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "17") == 0 ) {
             return "America/Argentina/Salta";
         }
         else if ( strcmp (region, "18") == 0 ) {
-            return "America/Argentina/San_Juan";
+            return "America/Argentina/San Juan";
         }
         else if ( strcmp (region, "19") == 0 ) {
-            return "America/Argentina/San_Luis";
+            return "America/Argentina/San Luis";
         }
         else if ( strcmp (region, "20") == 0 ) {
-            return "America/Argentina/Rio_Gallegos";
+            return "America/Argentina/Rio Gallegos";
         }
         else if ( strcmp (region, "21") == 0 ) {
-            return "America/Argentina/Buenos_Aires";
+            return "America/Argentina/Buenos Aires";
         }
         else if ( strcmp (region, "22") == 0 ) {
             return "America/Argentina/Catamarca";
@@ -115,7 +115,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         }
     }
     if ( strcmp (country, "AS") == 0 ) {
-        return "Pacific/Pago_Pago";
+        return "Pacific/Pago Pago";
     }
     if ( strcmp (country, "AT") == 0 ) {
         return "Europe/Vienna";
@@ -186,7 +186,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Porto-Novo";
     }
     if ( strcmp (country, "BL") == 0 ) {
-        return "America/St_Barthelemy";
+        return "America/St Barthelemy";
     }
     if ( strcmp (country, "BM") == 0 ) {
         return "Atlantic/Bermuda";
@@ -195,20 +195,20 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Brunei";
     }
     if ( strcmp (country, "BO") == 0 ) {
-        return "America/La_Paz";
+        return "America/La Paz";
     }
     if ( strcmp (country, "BQ") == 0 ) {
         return "America/Curacao";
     }
     if ( strcmp (country, "BR") == 0 ) {
         if ( strcmp (region, "01") == 0 ) {
-            return "America/Rio_Branco";
+            return "America/Rio Branco";
         }
         else if ( strcmp (region, "02") == 0 ) {
             return "America/Maceio";
         }
         else if ( strcmp (region, "03") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "04") == 0 ) {
             return "America/Manaus";
@@ -220,13 +220,13 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Fortaleza";
         }
         else if ( strcmp (region, "07") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "08") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "11") == 0 ) {
-            return "America/Campo_Grande";
+            return "America/Campo Grande";
         }
         else if ( strcmp (region, "13") == 0 ) {
             return "America/Belem";
@@ -235,7 +235,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Cuiaba";
         }
         else if ( strcmp (region, "15") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "16") == 0 ) {
             return "America/Belem";
@@ -244,37 +244,37 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Recife";
         }
         else if ( strcmp (region, "18") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "20") == 0 ) {
             return "America/Fortaleza";
         }
         else if ( strcmp (region, "21") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "22") == 0 ) {
             return "America/Recife";
         }
         else if ( strcmp (region, "23") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "24") == 0 ) {
-            return "America/Porto_Velho";
+            return "America/Porto Velho";
         }
         else if ( strcmp (region, "25") == 0 ) {
-            return "America/Boa_Vista";
+            return "America/Boa Vista";
         }
         else if ( strcmp (region, "26") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "27") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "28") == 0 ) {
             return "America/Maceio";
         }
         else if ( strcmp (region, "29") == 0 ) {
-            return "America/Sao_Paulo";
+            return "America/Sao Paulo";
         }
         else if ( strcmp (region, "30") == 0 ) {
             return "America/Recife";
@@ -318,7 +318,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Halifax";
         }
         else if ( strcmp (region, "NL") == 0 ) {
-            return "America/St_Johns";
+            return "America/St Johns";
         }
         else if ( strcmp (region, "NS") == 0 ) {
             return "America/Halifax";
@@ -327,7 +327,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Yellowknife";
         }
         else if ( strcmp (region, "NU") == 0 ) {
-            return "America/Rankin_Inlet";
+            return "America/Rankin Inlet";
         }
         else if ( strcmp (region, "ON") == 0 ) {
             return "America/Toronto";
@@ -515,13 +515,13 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "America/Bogota";
     }
     if ( strcmp (country, "CR") == 0 ) {
-        return "America/Costa_Rica";
+        return "America/Costa Rica";
     }
     if ( strcmp (country, "CU") == 0 ) {
         return "America/Havana";
     }
     if ( strcmp (country, "CV") == 0 ) {
-        return "Atlantic/Cape_Verde";
+        return "Atlantic/Cape Verde";
     }
     if ( strcmp (country, "CW") == 0 ) {
         return "America/Curacao";
@@ -548,7 +548,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "America/Dominica";
     }
     if ( strcmp (country, "DO") == 0 ) {
-        return "America/Santo_Domingo";
+        return "America/Santo Domingo";
     }
     if ( strcmp (country, "DZ") == 0 ) {
         return "Africa/Algiers";
@@ -628,7 +628,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Cairo";
     }
     if ( strcmp (country, "EH") == 0 ) {
-        return "Africa/El_Aaiun";
+        return "Africa/El Aaiun";
     }
     if ( strcmp (country, "ER") == 0 ) {
         return "Africa/Asmara";
@@ -690,7 +690,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         }
     }
     if ( strcmp (country, "ET") == 0 ) {
-        return "Africa/Addis_Ababa";
+        return "Africa/Addis Ababa";
     }
     if ( strcmp (country, "FI") == 0 ) {
         return "Europe/Helsinki";
@@ -767,7 +767,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Europe/Athens";
     }
     if ( strcmp (country, "GS") == 0 ) {
-        return "Atlantic/South_Georgia";
+        return "Atlantic/South Georgia";
     }
     if ( strcmp (country, "GT") == 0 ) {
         return "America/Guatemala";
@@ -782,7 +782,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "America/Guyana";
     }
     if ( strcmp (country, "HK") == 0 ) {
-        return "Asia/Hong_Kong";
+        return "Asia/Hong Kong";
     }
     if ( strcmp (country, "HN") == 0 ) {
         return "America/Tegucigalpa";
@@ -791,7 +791,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Europe/Zagreb";
     }
     if ( strcmp (country, "HT") == 0 ) {
-        return "America/Port-au-Prince";
+        return "America/Port au Prince";
     }
     if ( strcmp (country, "HU") == 0 ) {
         return "Europe/Budapest";
@@ -928,7 +928,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Jerusalem";
     }
     if ( strcmp (country, "IM") == 0 ) {
-        return "Europe/Isle_of_Man";
+        return "Europe/Isle of Man";
     }
     if ( strcmp (country, "IN") == 0 ) {
         return "Asia/Kolkata";
@@ -967,7 +967,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Bishkek";
     }
     if ( strcmp (country, "KH") == 0 ) {
-        return "Asia/Phnom_Penh";
+        return "Asia/Phnom Penh";
     }
     if ( strcmp (country, "KI") == 0 ) {
         return "Pacific/Tarawa";
@@ -976,7 +976,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Indian/Comoro";
     }
     if ( strcmp (country, "KN") == 0 ) {
-        return "America/St_Kitts";
+        return "America/St Kitts";
     }
     if ( strcmp (country, "KP") == 0 ) {
         return "Asia/Pyongyang";
@@ -1053,7 +1053,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Beirut";
     }
     if ( strcmp (country, "LC") == 0 ) {
-        return "America/St_Lucia";
+        return "America/St Lucia";
     }
     if ( strcmp (country, "LI") == 0 ) {
         return "Europe/Vaduz";
@@ -1164,7 +1164,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
     }
     if ( strcmp (country, "MX") == 0 ) {
         if ( strcmp (region, "01") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "02") == 0 ) {
             return "America/Tijuana";
@@ -1176,7 +1176,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Merida";
         }
         else if ( strcmp (region, "05") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "06") == 0 ) {
             return "America/Chihuahua";
@@ -1185,22 +1185,22 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Monterrey";
         }
         else if ( strcmp (region, "08") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "09") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "10") == 0 ) {
             return "America/Mazatlan";
         }
         else if ( strcmp (region, "11") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "12") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "13") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "14") == 0 ) {
             return "America/Mazatlan";
@@ -1209,10 +1209,10 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Chihuahua";
         }
         else if ( strcmp (region, "16") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "17") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "18") == 0 ) {
             return "America/Mazatlan";
@@ -1221,19 +1221,19 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Monterrey";
         }
         else if ( strcmp (region, "20") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "21") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "22") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "23") == 0 ) {
             return "America/Cancun";
         }
         else if ( strcmp (region, "24") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "25") == 0 ) {
             return "America/Mazatlan";
@@ -1248,10 +1248,10 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Monterrey";
         }
         else if ( strcmp (region, "29") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "30") == 0 ) {
-            return "America/Mexico_City";
+            return "America/Mexico City";
         }
         else if ( strcmp (region, "31") == 0 ) {
             return "America/Merida";
@@ -1265,43 +1265,43 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
     }
     if ( strcmp (country, "MY") == 0 ) {
         if ( strcmp (region, "01") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "02") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "03") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "04") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "05") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "06") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "07") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "08") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "09") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "11") == 0 ) {
             return "Asia/Kuching";
         }
         else if ( strcmp (region, "12") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "13") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "14") == 0 ) {
-            return "Asia/Kuala_Lumpur";
+            return "Asia/Kuala Lumpur";
         }
         else if ( strcmp (region, "15") == 0 ) {
             return "Asia/Kuching";
@@ -1415,7 +1415,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Pacific/Marquesas";
     }
     if ( strcmp (country, "PG") == 0 ) {
-        return "Pacific/Port_Moresby";
+        return "Pacific/Port Moresby";
     }
     if ( strcmp (country, "PH") == 0 ) {
         return "Asia/Manila";
@@ -1433,7 +1433,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Pacific/Pitcairn";
     }
     if ( strcmp (country, "PR") == 0 ) {
-        return "America/Puerto_Rico";
+        return "America/Puerto Rico";
     }
     if ( strcmp (country, "PS") == 0 ) {
         return "Asia/Gaza";
@@ -1824,7 +1824,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Singapore";
     }
     if ( strcmp (country, "SH") == 0 ) {
-        return "Atlantic/St_Helena";
+        return "Atlantic/St Helena";
     }
     if ( strcmp (country, "SI") == 0 ) {
         return "Europe/Ljubljana";
@@ -1839,7 +1839,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Freetown";
     }
     if ( strcmp (country, "SM") == 0 ) {
-        return "Europe/San_Marino";
+        return "Europe/San Marino";
     }
     if ( strcmp (country, "SN") == 0 ) {
         return "Africa/Dakar";
@@ -1854,10 +1854,10 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Juba";
     }
     if ( strcmp (country, "ST") == 0 ) {
-        return "Africa/Sao_Tome";
+        return "Africa/Sao Tome";
     }
     if ( strcmp (country, "SV") == 0 ) {
-        return "America/El_Salvador";
+        return "America/El Salvador";
     }
     if ( strcmp (country, "SX") == 0 ) {
         return "America/Curacao";
@@ -1869,7 +1869,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Africa/Mbabane";
     }
     if ( strcmp (country, "TC") == 0 ) {
-        return "America/Grand_Turk";
+        return "America/Grand Turk";
     }
     if ( strcmp (country, "TD") == 0 ) {
         return "Africa/Ndjamena";
@@ -1905,7 +1905,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Istanbul";
     }
     if ( strcmp (country, "TT") == 0 ) {
-        return "America/Port_of_Spain";
+        return "America/Port of Spain";
     }
     if ( strcmp (country, "TV") == 0 ) {
         return "Pacific/Funafuti";
@@ -1914,7 +1914,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Asia/Taipei";
     }
     if ( strcmp (country, "TZ") == 0 ) {
-        return "Africa/Dar_es_Salaam";
+        return "Africa/Dar es Salaam";
     }
     if ( strcmp (country, "UA") == 0 ) {
         if ( strcmp (region, "01") == 0 ) {
@@ -2022,25 +2022,25 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Phoenix";
         }
         else if ( strcmp (region, "CA") == 0 ) {
-            return "America/Los_Angeles";
+            return "America/Los Angeles";
         }
         else if ( strcmp (region, "CO") == 0 ) {
             return "America/Denver";
         }
         else if ( strcmp (region, "CT") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "DC") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "DE") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "FL") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "GA") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "HI") == 0 ) {
             return "Pacific/Honolulu";
@@ -2061,22 +2061,22 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Chicago";
         }
         else if ( strcmp (region, "KY") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "LA") == 0 ) {
             return "America/Chicago";
         }
         else if ( strcmp (region, "MA") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "MD") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "ME") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "MI") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "MN") == 0 ) {
             return "America/Chicago";
@@ -2091,7 +2091,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Denver";
         }
         else if ( strcmp (region, "NC") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "ND") == 0 ) {
             return "America/Chicago";
@@ -2100,37 +2100,37 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Chicago";
         }
         else if ( strcmp (region, "NH") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "NJ") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "NM") == 0 ) {
             return "America/Denver";
         }
         else if ( strcmp (region, "NV") == 0 ) {
-            return "America/Los_Angeles";
+            return "America/Los Angeles";
         }
         else if ( strcmp (region, "NY") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "OH") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "OK") == 0 ) {
             return "America/Chicago";
         }
         else if ( strcmp (region, "OR") == 0 ) {
-            return "America/Los_Angeles";
+            return "America/Los Angeles";
         }
         else if ( strcmp (region, "PA") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "RI") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "SC") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "SD") == 0 ) {
             return "America/Chicago";
@@ -2145,19 +2145,19 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
             return "America/Denver";
         }
         else if ( strcmp (region, "VA") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "VT") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "WA") == 0 ) {
-            return "America/Los_Angeles";
+            return "America/Los Angeles";
         }
         else if ( strcmp (region, "WI") == 0 ) {
             return "America/Chicago";
         }
         else if ( strcmp (region, "WV") == 0 ) {
-            return "America/New_York";
+            return "America/New York";
         }
         else if ( strcmp (region, "WY") == 0 ) {
             return "America/Denver";
@@ -2214,7 +2214,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Europe/Vatican";
     }
     if ( strcmp (country, "VC") == 0 ) {
-        return "America/St_Vincent";
+        return "America/St Vincent";
     }
     if ( strcmp (country, "VE") == 0 ) {
         return "America/Caracas";
@@ -2223,10 +2223,10 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "America/Tortola";
     }
     if ( strcmp (country, "VI") == 0 ) {
-        return "America/St_Thomas";
+        return "America/St Thomas";
     }
     if ( strcmp (country, "VN") == 0 ) {
-        return "Asia/Phnom_Penh";
+        return "Asia/Phnom Penh";
     }
     if ( strcmp (country, "VU") == 0 ) {
         return "Pacific/Efate";
@@ -2235,7 +2235,7 @@ const char* GeoIP_time_zone_by_country_and_region(const char * country,const cha
         return "Pacific/Wallis";
     }
     if ( strcmp (country, "WS") == 0 ) {
-        return "Pacific/Pago_Pago";
+        return "Pacific/Pago Pago";
     }
     if ( strcmp (country, "YE") == 0 ) {
         return "Asia/Aden";

@@ -183,12 +183,12 @@ namespace entities
         if(d==player1) switch(type)
         {
             case I_BOOST:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +10 health bonus! (%d)", d->maxhealth);
+                conoutf(CON_GAMEINFO, "\f7You got the f3health boost \f7 and have a maximum health of \f4%d\f7.", d->maxhealth);
                 playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_QUAD:
-                conoutf(CON_GAMEINFO, "\f2you got the quad!");
+                conoutf(CON_GAMEINFO, "\f7You got the f3quad damage\f7. Your damage is now \f7x4\f7.");
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
         }
@@ -257,7 +257,7 @@ namespace entities
         for(;;)
         {
             e = findentity(TELEDEST, e+1);
-            if(e==beenhere || e<0) { conoutf(CON_WARN, "no teleport destination for tag %d", tag); return; }
+            if(e==beenhere || e<0) { conoutf(CON_WARN, "There is no \f3teleport destination \f7for tag \f4%d\f7.", tag); return; }
             if(beenhere<0) beenhere = e;
             if(ents[e]->attr2==tag)
             {
@@ -311,7 +311,7 @@ namespace entities
                 if(d!=player1) break;
                 if(n==respawnent) break;
                 respawnent = n;
-                conoutf(CON_GAMEINFO, "\f2respawn point set!");
+                conoutf(CON_GAMEINFO, "\f7Respawn point has been \set\f7. If you die, you'll \f4respawn \f7on that point.");
                 playsound(S_V_RESPAWNPOINT);
                 break;
 
@@ -352,7 +352,7 @@ namespace entities
         {
             d->quadmillis = 0;
             playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
-            if(d==player1) conoutf(CON_GAMEINFO, "\f2quad damage is over");
+            if(d==player1) conoutf(CON_GAMEINFO, "\f7Your \f7quad damage \f7is over. Your damage is now \f4normal\f7.");
         }
     }
 
