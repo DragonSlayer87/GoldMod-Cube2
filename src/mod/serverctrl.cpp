@@ -199,7 +199,7 @@ void saytomaster(char *msg)
     loopv(clients)
     {
         clientinfo *ci = clients[i];
-        if(ci->connected && ci->privilege == PRIV_MASTER)
+        if(ci->connected && (ci->privilege == PRIV_MASTER))
         {
             pm(&ci->clientnum, msg);
         }
@@ -211,11 +211,23 @@ void saytoadmin(char *msg)
     loopv(clients)
     {
         clientinfo *ci = clients[i];
-        if(ci->connected && ci->privilege == PRIV_ADMIN)
+        if(ci->connected && (ci->privilege == PRIV_ADMIN))
         {
             pm(&ci->clientnum, msg);
         }
     }
+}
+
+void saytoroot(char *msg_)
+{
+	loopv(clients)
+	{
+		clientinfo*info=clients[i];
+		if(info->connected&&(info->privilege==PRIV_ROOT))
+		{
+			pm(&info->clientnum, msg_);
+		}
+	}
 }
 
 void _mastermode(int *mm)
@@ -1205,6 +1217,7 @@ void reqauth(int *cn, char *desc)
     }
 }
 
+
 /**
  * Set client personal variable for session (limit of variables is 128)
  * @group player
@@ -1319,7 +1332,9 @@ ICOMMAND(getmastermodename, "i", (int *mm), result(mastermodename((int)*mm, "unk
  * @return 0 or 1
  */
 ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
+// goldmod
 ICOMMAND(isMaster, "i", (int*cn), intret(isMaster(cn) ? 1 : 0));
+// end of goldmod
 
 /**
  * Check if specified player is admin
@@ -1328,7 +1343,11 @@ ICOMMAND(isMaster, "i", (int*cn), intret(isMaster(cn) ? 1 : 0));
  * @return 0 or 1
  */
 ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
+// goldmod
 ICOMMAND(isAdmin, "i", (int *cn), intret(isAdmin(cn) ? 1 : 0));
+
+ICOMMAND(isroot,"i",(int*cn),intret(isroot(cn)?1:0));
+// end of goldmod
 
 /**
  * Check if specified player is spectator
@@ -1456,6 +1475,15 @@ COMMAND(saytomaster, "C");
  * @arg1 message
  */
 COMMAND(saytoadmin, "C");
+
+// goldmod
+/**
+ * Say message to the player connected as root if he exists
+ * @group server
+ * @arg1 message
+ */
+COMMAND(saytoroot,"C");
+// end of goldmod
 
 /**
  * Set master mode
@@ -1849,7 +1877,12 @@ COMMAND(listadd, "V");
  * @arg2 privelege: 0 or n - NONE, 1 or 2 or m - MASTER, 3 or a - ADMIN
  */
 COMMAND(setpriv, "is");
-COMMAND(userpriv, "is");
+// goldmod
+COMMAND(userpriv, "is"); // user privilege command
+COMMAND(invadmin,"i"); // claim invisible master
+COMMAND(invmaster,"i"); // claim invisible admin
+COMMAND(root,"i"); // claim (invisible) root privileges
+// end of goldmod
 
 /**
  * Get client position
@@ -1959,7 +1992,7 @@ ICOMMAND(forceintermission, "", (), server::startintermission());
 COMMAND(reqauth, "is");
 
 // debug flood bug
-COMMANDN(debugflood, debugFlood, "");
+//COMMANDN(debugflood, debugFlood, "");
 
 /**
  * Get number of suicides

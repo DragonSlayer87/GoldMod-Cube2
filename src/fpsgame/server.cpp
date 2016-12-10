@@ -409,10 +409,12 @@ namespace server
     {
         switch(type)
         {
+			case PRIV_NONE: return "normal";
             case PRIV_ADMIN: return "admin";
             case PRIV_AUTH: return "auth";
             case PRIV_MASTER: return "master";
-            default: return "unknown";
+			case PRIV_ROOT: return "root";
+			default: return "unknown";
         }
     }
 
@@ -1000,7 +1002,7 @@ namespace server
     {
         if(!gamepaused) return;
         int admins = 0;
-        loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
+        loopv(clients) if((clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local)||clients[i]->local)admins++;
         if(!admins) pausegame(false);
     }
 
@@ -1063,6 +1065,7 @@ namespace server
             case 'a': case 'A': u.privilege = PRIV_ADMIN; break;
             case 'm': case 'M': default: u.privilege = PRIV_AUTH; break;
             case 'n': case 'N': u.privilege = PRIV_NONE; break;
+			case 'r': case 'R': u.privilege=PRIV_ROOT;break;
         }
     }
     COMMAND(adduser, "ssss");
@@ -1155,7 +1158,7 @@ namespace server
         string msg;
         if(val && authname)
         {
-            if(authdesc && authdesc[0]) formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f5%s\fr'. \f7[Domain: \fs\f4%s\fr]", colorname(ci), name, authname, authdesc);
+            if(authdesc && authdesc[0]) formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'. \f7[Domain: \fs\f4%s\fr]", colorname(ci), name, authname, authdesc);
             else formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'\f7.", colorname(ci), name, authname);
         }
         else formatstring(msg, "Player \f3%s \f7has %s \f4%s\f7.", colorname(ci), val ? "claimed" : "relinquished", name);
@@ -1192,10 +1195,10 @@ namespace server
             clientinfo *vinfo = (clientinfo *)getclientinfo(victim);
             if(vinfo && vinfo->connected && (priv > vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
             {
-                if ( priv == PRIV_MASTER )
+                if (priv==PRIV_MASTER)
                 {
                     int cn = (int)ci->clientnum;
-                    sendf(cn, 1, "ris", N_SERVMSG, "You can't \f3kick \f7a player if you just've \f4master \f7privileges." );
+                    sendf(cn, 1, "ris", N_SERVMSG, "You can't \f3kick \f7a player if you just've \f4(inv-)master \f7privileges." );
                     return false;
                 }
                 
@@ -2510,6 +2513,7 @@ namespace server
 
         // remod
         if(checkpban(ip)) return DISC_IPBAN;
+		// goldmod
 		if(checkaskidban(ip)) return DISC_ASKIDBAN;
 
         if(mastermode>=MM_PRIVATE && allowedips.find(ip)<0) return DISC_PRIVATE;
@@ -2723,7 +2727,7 @@ namespace server
 
         if(m_demo) setupdemoplayback();
 
-        if(servermotd[0]) sendf(ci->clientnum, 1, "ris", N_SERVMSG, servermotd);
+        if(servermotd[0]) sendf(ci->clientnum, 1, "ris", N_SERVMSG, servermotd); // send servermotd
 
         // remod
         remod::onevent(ONCONNECT, "i", ci->clientnum);

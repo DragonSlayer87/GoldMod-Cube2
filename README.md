@@ -12,9 +12,13 @@ Goldmod is an advanced server modification based on remod.
 
 ** Features:**
 
+- customize your server wuth "ammo", "health","armour", ... commands
 - very good UI
 - very userfriendly
+- informative server log with timestamp
 - IRC-Bot
+- invisible master and invisible admin
+- root privilege level (higher than admin)
 - cubescript scripting language
 - GEOIP SUPPORT FOR geoip country, geoip city, geoip region, geoip timezone
 - about 80 commands
@@ -23,7 +27,7 @@ Goldmod is an advanced server modification based on remod.
 - remote control (udp, tdp, netcat)
 - user system (username, password1, password2)
 - cross platform (windows, linux, mac, bsd, arch, ...) 
-- Duel Mode
+- Duel Mode 
 - possibility to rename bots ("ainame" in server-init)
 - askidban libary (ban some vpns from server)
 - really often updates with bugfixes, new functions, ...
@@ -58,7 +62,6 @@ and very much more ...
     enable-disable-commands-system (currently not in work)
     MixModule (currently not in work)
     Clantag Detection (in work)
-    GeoIP TimeZone (in work)
 
 -------------------------------------------------------------------------------------------------------------
 
@@ -66,10 +69,10 @@ and very much more ...
 
     0. First you need to make sure, you've the following packages installed:
     
-        - mingw-w64 (cross-compiler -> for cross-compile)
+        - mingw-w64 (cross-compiler -> for cross-compile to windows)
         - gcc (install all)
-        - mingw-w64-zlib (for cross-compile)
-        - mingw-w64-sqlite (for cross-compile)
+        - mingw-w64-zlib (for cross-compile to windows)
+        - mingw-w64-sqlite (for cross-compile to windows)
         - zlib (for both)
         - sqlite (for both)
         - automake (for both)
@@ -102,20 +105,20 @@ and very much more ...
     3. type in: git pull
     
     4. Build it: cd src
-    5. Start Compiler: make (for cross-compile: make -f Makefile.win32)
+    5. Start Compiler: make (for cross-compile to windows: make -f Makefile.win32)
     
 ------------------------------------------------------------------------------------------------------------- 
 
 **Contact:**
 
     E-Mail: githubseb.contact@gmail.com
-    IRC: Server: irc.gamesurge.com 6667 | Channel: #buds-servers, #novi, #sauercom and #impressivesquad ---> Names: BudSpencer
+    IRC: Server: irc.gamesurge.com 6667 | Channel: #goldmod -> Username: BudSpencer, (BudSpencer1, BudSpencer2)
     Ingame: Names: /BudSpencer, Archaeopteryx, Cocoz
 
 -------------------------------------------------------------------------------------------------------------
 
 **Bug Reports:**
 
-If you suspect any bugs and problems, likes and dislikes message me on IRC, E-Mail or talk with me ingame, I'm always listening. New Ideas for some features are desired ;), but no insulting anything offensive, I don't waste time with random noobs. 
+If you suspect any bugs and problems, likes and dislikes message me on IRC, E-Mail or talk with me ingame, I'm always listening. New Ideas for some features are desired ;), but no insulting anything offensive, I don't waste time with insulting assholes :D. 
 
 -------------------------------------------------------------------------------------------------------------

@@ -385,6 +385,18 @@ bool isAdmin(int *cn)
     return (ci && ci->privilege == PRIV_ADMIN);
 }
 
+bool isroot(int *cn)
+{
+	clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+	return(ci&&ci->privilege>=PRIV_ROOT);
+}
+
+bool isauth(int *cn)
+{
+	clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+	return(ci&&ci->privilege>=PRIV_AUTH);
+}
+
 bool isspectator(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
@@ -761,7 +773,34 @@ void userauth(clientinfo *ci, int priv)
     checkpausegame();
 }
 
-// wepon accuracy
+// goldmod
+// invadmin - claim invisible admin
+void invadmin(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(!ci||ci->privilege==PRIV_ADMIN)return;
+    ci->privilege = PRIV_ADMIN;
+}
+
+// invmaster - claim invisible master
+void invmaster(int *cn)
+{
+    clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+    if(!ci||ci->privilege==PRIV_MASTER)return;
+    ci->privilege=PRIV_MASTER;
+}
+
+// root - claim (invisible) root;   
+void root(int *cn)
+{
+    clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+    if(!ci||ci->privilege==PRIV_ROOT)return;
+    ci->privilege=PRIV_ROOT;
+}
+
+// end of goldmod
+
+// weapon accuracy
 int getwepaccuracy(int cn, int gun)
 {
     int acc = 0;

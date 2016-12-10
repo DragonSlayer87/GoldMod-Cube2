@@ -215,8 +215,8 @@ enum
 };
 
 // network messages codes, c2s, c2c, s2c
-
-enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_AUTH, PRIV_ADMIN };
+//          1              2         2           3         4
+enum { PRIV_NONE = 0, PRIV_MASTER,PRIV_AUTH,PRIV_ADMIN,PRIV_ROOT };
 
 enum
 {

@@ -89,6 +89,11 @@ namespace remod
     bool isadmin(int *cn);
     bool isMaster(int *cn);
     bool isAdmin(int *cn);
+	bool isroot(int *cn);
+	bool isinvadmin(int *cn);
+	bool isinvmaster(int *cn);
+	bool isinvroot(int *cn);
+	bool isauth(int *cn);
     bool isspectator(int *cn);
     bool isediting(int *cn);
     void concatpstring(char** str, const char *piece);
@@ -117,6 +122,10 @@ namespace remod
     bool checkflood(clientinfo *ci, int type);
     void debugFlood();
     void addSuicide(clientinfo *ci); // count suicides
+	// goldmod - invpriv + root
+	void invadmin(int *cn); // admin privilege
+	void invmaster(int *cn); // master privilege
+    void root(int *cn); // root privilege
     
     // remodex functions imported to goldmod
     enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
