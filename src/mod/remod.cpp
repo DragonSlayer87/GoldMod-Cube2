@@ -671,15 +671,110 @@ bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
     return true;
 }
 
+// allow/disallow player to claim master
+// shitcode :c
+void allowmaster_(int *actor,int *cn,bool val)
+{
+    clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+    clientinfo*ac=(clientinfo*)getinfo((int)*actor);
+    if(!ci||ci->state.aitype!=AI_NONE)return; // no bots or not existing players
+    if(!ac||ac->state.aitype!=AI_NONE)return; // return if caller is invalid or bot
+    char *msg,*nmsg;
+    if(val)
+    {
+        ci->allowmaster=true;
+        msg=tempformatstring("Player \f3%s(%i) \f7is now permitted claim \f4master\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are now \f3permitted \f7to claim \f4master\f7.");
+    }
+    if(!val)
+    {
+        ci->allowmaster=false;
+        msg=tempformatstring("Player \f3%s(%i) \f7is not anymore permitted to claim \f4master\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are not anymore \f3permitted \f7to claim \f4master\f7.");
+    }
+    sendf(ci->clientnum, 1, "ris", N_SERVMSG,nmsg);
+    sendf(ac->clientnum, 1, "ris", N_SERVMSG,msg);
+    return;
+}
+
+// allow/disallow player to claim admin
+// shitcode :c
+void allowadmin_(int *actor,int *cn,bool val)
+{
+    clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+    clientinfo*ac=(clientinfo*)getinfo((int)*actor);
+    if(!ci||ci->state.aitype!=AI_NONE)return; // no bots or not existing players
+    if(!ac||ac->state.aitype!=AI_NONE)return; // return if caller is invalid or bot
+    char *msg,*nmsg;
+    if(val)
+    {
+        ci->allowadmin=true;
+        msg=tempformatstring("Player \f3%s(%i) \f7is now permitted claim \f4admin\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are now \f3permitted \f7to claim \f4master\f7.");
+    }
+    if(!val)
+    {
+        ci->allowadmin=false;
+        msg=tempformatstring("Player \f3%s(%i) \f7is not anymore permitted to claim \f4admin\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are not anymore \f3permitted \f7to claim \f4admin\f7.");
+    }
+    sendf(ci->clientnum, 1, "ris", N_SERVMSG,nmsg);
+    sendf(ac->clientnum, 1, "ris", N_SERVMSG,msg);
+    return;
+}
+
+// allow/disallow player to claim root
+// shitcode :c
+void allowroot_(int *actor,int *cn,bool val)
+{
+    clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+    clientinfo*ac=(clientinfo*)getinfo((int)*actor);
+    if(!ci||ci->state.aitype!=AI_NONE)return; // no bots or not existing players
+    if(!ac||ac->state.aitype!=AI_NONE)return; // return if caller is invalid or bot
+    char *msg,*nmsg;
+    if(val)
+    {
+        ci->allowroot=true;
+        msg=tempformatstring("Player \f3%s(%i) \f7is now permitted claim \f4root\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are now \f3permitted \f7to claim \f4root\f7.");
+    }
+    if(!val)
+    {
+        ci->allowroot=false;
+        msg=tempformatstring("Player \f3%s(%i) \f7is not anymore permitted to claim \f4root\f7.",ci->name,ci->clientnum);
+        nmsg=tempformatstring("You are not anymore \f3permitted \f7to claim \f4root\f7.");
+    }
+    sendf(ci->clientnum, 1, "ris", N_SERVMSG,nmsg);
+    sendf(ac->clientnum, 1, "ris", N_SERVMSG,msg);
+    return;
+}
+
+// shitcode :c
+void set_allowm(int*actor,int *cn){allowmaster_(actor,cn,true);}
+void set_allowa(int*actor,int *cn){allowadmin_(actor,cn,true);}
+void set_allowr(int*actor,int *cn){allowroot_(actor,cn,true);}
+void set_disallowm(int*actor,int *cn){allowmaster_(actor,cn,false);}
+void set_disallowa(int*actor,int *cn){allowadmin_(actor,cn,false);}
+void set_disallowr(int*actor,int *cn){allowroot_(actor,cn,false);}
+
+COMMANDN(allowmaster,set_allowm,"ii");
+COMMANDN(allowadmin,set_allowa,"ii");
+COMMANDN(allowroot,set_allowr,"ii");
+
+COMMANDN(disallowmaster,set_disallowm,"ii");
+COMMANDN(disallowadmin,set_disallowa,"ii");
+COMMANDN(disallowroot,set_disallowr,"ii");
+
 // set client's privelege
 void setmaster(clientinfo *ci, int priv)
 {
     if(!ci || ci->privilege == priv) return;
-
+    
+    ci->isinv=false;
     string msg;
     const char *name = "";
 
-    priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ADMIN);
+    priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ROOT);
     if(ci->privilege != PRIV_NONE)
     {
         name = privname(ci->privilege);
@@ -687,7 +782,10 @@ void setmaster(clientinfo *ci, int priv)
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, 0, "", "", "");
     }
-
+    
+    if(priv==PRIV_MASTER){if(!ci->allowmaster){return;}}
+    if(priv==PRIV_ADMIN){if(!ci->allowadmin){return;}}
+    if(priv==PRIV_ROOT){if(!ci->allowroot){return;}}
     ci->privilege = priv;
 
     // check if anyone have priveledge
@@ -707,8 +805,11 @@ void setmaster(clientinfo *ci, int priv)
     putint(p, mastermode);
     loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
     {
-        putint(p, clients[i]->clientnum);
-        putint(p, clients[i]->privilege);
+        if(!clients[i]->isinv)
+        {
+            putint(p, clients[i]->clientnum);
+            putint(p, clients[i]->privilege);
+        }
     }
     putint(p, -1);
     sendpacket(-1, 1, p.finalize());
@@ -730,13 +831,16 @@ void setmaster(clientinfo *ci, int priv)
 void userauth(clientinfo *ci, int priv)
 {
     if(!ci || ci->privilege == priv) return;
-
+    ci->isinv=false;
     priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ADMIN);
     if(ci->privilege != PRIV_NONE)
     {
         remod::onevent(ONUSERAUTH, "iisss", ci->clientnum, 0, "", "", "");
     }
-
+    
+    if(priv==PRIV_MASTER){if(!ci->allowmaster){return;}}
+    if(priv==PRIV_ADMIN){if(!ci->allowadmin){return;}}
+    if(priv==PRIV_ROOT){if(!ci->allowroot){return;}}
     ci->privilege = priv;
 
     // check if anyone have priveledge
@@ -756,8 +860,11 @@ void userauth(clientinfo *ci, int priv)
     putint(p, mastermode);
     loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
     {
-        putint(p, clients[i]->clientnum);
-        putint(p, clients[i]->privilege);
+        if(!clients[i]->isinv)
+        {
+            putint(p, clients[i]->clientnum);
+            putint(p, clients[i]->privilege);
+        }
     }
     putint(p, -1);
     sendpacket(-1, 1, p.finalize());
@@ -779,7 +886,9 @@ void invadmin(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
     if(!ci||ci->privilege==PRIV_ADMIN)return;
+    if(!ci->allowadmin){return;}
     ci->privilege = PRIV_ADMIN;
+    ci->isinv=true;
 }
 
 // invmaster - claim invisible master
@@ -787,15 +896,64 @@ void invmaster(int *cn)
 {
     clientinfo*ci=(clientinfo*)getinfo((int)*cn);
     if(!ci||ci->privilege==PRIV_MASTER)return;
+    if(!ci->allowmaster){return;}
     ci->privilege=PRIV_MASTER;
+    ci->isinv=true;
 }
 
-// root - claim (invisible) root;   
+// root - claim root privileges;   
 void root(int *cn)
 {
     clientinfo*ci=(clientinfo*)getinfo((int)*cn);
-    if(!ci||ci->privilege==PRIV_ROOT)return;
-    ci->privilege=PRIV_ROOT;
+    int priv=PRIV_ROOT;char *root_msg;
+    if(!ci || ci->privilege == PRIV_ROOT) return;
+    ci->isinv=false;
+    priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ROOT);
+    if(ci->privilege != PRIV_NONE)
+    {
+        root_msg=tempformatstring("Player \f3%s \f7has claimed \f4root\f7.",colorname(ci));
+        sendservmsg(root_msg);
+        remod::onevent(ONROOT, "iisss", ci->clientnum, 0, "", "", "");
+    }
+    
+    if(!ci->allowroot){return;}
+    ci->privilege = PRIV_ROOT;
+
+    // check if anyone have privilege
+    bool hasmaster = false;
+    bool modechanged = false;
+    loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+    if(!hasmaster)
+    {
+        mastermode = MM_OPEN;
+        allowedips.shrink(0);
+        modechanged = true;
+    }
+
+    // send list of priveledges
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, N_CURRENTMASTER);
+    putint(p, mastermode);
+    loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
+    {
+        if(!clients[i]->isinv) // only clients with visible privileges
+        {
+            putint(p, clients[i]->clientnum);
+            putint(p, clients[i]->privilege);
+        }
+    }
+    putint(p, -1);
+    sendpacket(-1, 1, p.finalize());
+
+    if(modechanged) remod::onevent(ONMASTERMODE, "ii", -1, mastermode);
+
+    // check if client get any privelge
+    if(ci->privilege != PRIV_NONE)
+    {
+        remod::onevent(ONROOT, "iisss", ci->clientnum, ci->privilege, "", "", "");
+    }
+
+    checkpausegame();
 }
 
 // end of goldmod
@@ -969,14 +1127,33 @@ void sendmapto(int cn)
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(!ci || !m_edit) return;
 
-    if(!mapdata) conoutf("no map to send to %s(%i)", ci->name, cn);
-    else if(ci->getmap) conoutf("already sending map to %s(%i)", ci->name, cn);
+    if(!mapdata) conoutf("Here is no \f3map \f7to send to Player \f4%s(%i)\f7.", ci->name, cn);
+    else if(ci->getmap) conoutf("Server is already \f3sending \f7map to Player \f4%s(%i)\f7.", ci->name, cn);
     else
     {
         // remod
         remod::onevent(ONGETMAP, "i", cn);
 
-        sendservmsgf("[%s is getting the map]", colorname(ci));
+        sendservmsgf("Player \f3%s(%i) \f7is getting the \f4map\f7.", colorname(ci));
+        if((ci->getmap = sendfile(cn, 2, mapdata, "ri", N_SENDMAP)))
+            ci->getmap->freeCallback = freegetmap;
+        ci->needclipboard = totalmillis ? totalmillis : 1;
+    }
+}
+
+void sendhideandseekmap(int cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(!ci || ci->clientnum>127) return; // no unreal players or bots
+
+    if(!mapdata) conoutf("Here is no \f3map \f7to send to Player \f4%s(%i)\f7.", ci->name, cn);
+    else if(ci->getmap) conoutf("Server is already \f3sending \f7map to Player \f4%s(%i)\f7.", ci->name, cn);
+    else
+    {
+        // remod
+        remod::onevent(ONGETMAP, "i", cn);
+
+        sendservmsgf("Player \f3%s(%i) \f7is getting the \f4map\f7.", colorname(ci));
         if((ci->getmap = sendfile(cn, 2, mapdata, "ri", N_SENDMAP)))
             ci->getmap->freeCallback = freegetmap;
         ci->needclipboard = totalmillis ? totalmillis : 1;
@@ -1181,114 +1358,4 @@ done:
         if(ci)
             ci->state.ext.suicides++;
     }
-    
-    // extendet ammo -1 use default ammo
-    int ammoex[NUMGUNS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    int armourtypeex = -1; // -1 default, 0 blue, 1 green, 2 yellow
-    int armourex = -1; // -1 default armour num
-    int health = 0; // 0 default health
-    int gunselect = -1;
-    // multyply damage, 0 no damage, 1 normal damage
-    int damagescale[NUMGUNS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-
-    // ammo control
-    void setammo(int *wep, int *ammo)
-    {
-        if(*wep>-1 && *wep<GUN_PISTOL)
-        {
-            ammoex[*wep] = *ammo;
-        }
-    }
-
-    int getammo(int wep)
-    {
-        if(wep>-1 && wep<GUN_PISTOL)
-        {
-            return ammoex[wep];
-        } else return -1;
-    }
-
-    // armour control
-    void setarmour(int *n)
-    {
-        if(*n>-1)
-        {
-            armourex = *n;
-        }
-    }
-
-    void setarmourtype(int *type)
-    {
-        if(*type>=(A_BLUE-1) && *type<=A_YELLOW)
-        {
-            armourtypeex = *type;
-        }
-    }
-
-    int getarmour()
-    {
-        return armourex;
-    }
-
-    int getarmourtype()
-    {
-        return armourtypeex;
-    }
-
-    // health
-    void sethealth(int *n)
-    {
-        if(*n>0) health = *n;
-    }
-
-    int gethealth()
-    {
-        return(health);
-    }
-
-    // gunselect
-    void setgunselect(int *n)
-    {
-        if(*n>=-1 && *n<NUMGUNS)
-        {
-            gunselect = *n;
-        }
-    }
-
-    int getgunselect()
-    {
-        return gunselect;
-    }
-
-    // damage control
-    void setdamagescale(int *wep, int *s)
-    {
-        if(*wep>=0 && *wep<NUMGUNS)
-        {
-            damagescale[*wep] = *s;
-        }
-    }
-
-    int getdamagescale(int wep)
-    {
-        if(wep>=0 && wep<NUMGUNS)
-        {
-            return(damagescale[wep]);
-        } else return 1;
-    }
-
-    // bindings
-    COMMANDN(ammo, setammo, "ii");
-    COMMANDN(armourtype, setarmourtype, "i");
-    COMMANDN(armour, setarmour, "i");
-    COMMANDN(health, sethealth, "i");
-    COMMANDN(gunselect, setgunselect, "i");
-    COMMANDN(damagescale, setdamagescale, "ii");
-
-    ICOMMAND(getammo, "i", (int *wep), intret(getammo(*wep)));
-    ICOMMAND(getarmourtype, "", (), intret(getarmourtype()));
-    ICOMMAND(getarmour, "", (), intret(getarmour()));
-    ICOMMAND(gethealth, "", (), intret(gethealth()));
-    ICOMMAND(getgunselect, "", (), intret(getgunselect()));
-    ICOMMAND(getdamagescale, "i", (int *wep), intret(getdamagescale(*wep)));
 }

@@ -390,6 +390,22 @@ struct ctfclientmode : clientmode
             loopvj(flags) if(flags[j].owner==ci->clientnum) { scoreflag(ci, i, j); break; }
         }
     }
+    
+    void rugbypass(clientinfo *actor, clientinfo *target)
+    {
+        loopv(flags)
+        {
+            flag &f = flags[i];
+            if(flags[i].owner == actor->clientnum) {
+                returnflag(i);
+                dropflag(actor);
+                loopv(flags) if(flags[i].dropper == actor->clientnum) { flags[i].dropper = -1; flags[i].dropcount = 0; }
+                takeflag(target, i, f.version);
+                update();
+                remod::onevent(ONPASSFLAG,"ii",actor->clientnum,target->clientnum);
+            }
+        }
+    }
 
     void update()
     {

@@ -3,6 +3,7 @@
 
 #include "cube.h"
 #include "world.h"
+#include "fpsgame.h"
 
 #ifndef STANDALONE
 

@@ -115,15 +115,17 @@ void getteam(int *pcn)
         result(ci->team);
     }
 }
-
-void kick(int *pcn, int *pexpire, char *actorname)
+ 
+void kick(int *actorcn,int *pcn, int *pexpire, char *actorname)
 {
+    int accn=(int)*actorcn;
+    if(!accn||accn<0)accn=-1; // kick by server
     int cn = (int)*pcn;
     int expire = (int)*pexpire;
     if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
     expire += totalmillis;  //add current uptime
-    remod::oneventi(ONKICK, "ii", -1, cn);
-    if(strlen(actorname) == 0) actorname = newstring("console");
+    remod::oneventi(ONKICK, "ii",accn, cn);
+    if(strlen(actorname) == 0) actorname = newstring("server");
     //server::kick(cn, actorname, expire);
     server::addban(cn, actorname, expire);
     uint ip = getclientip(cn);
@@ -162,10 +164,7 @@ void _suicide(int *pcn)
 {
     int cn=(int)*pcn;
     clientinfo *ci = (clientinfo *)getinfo(cn);
-    if(ci)
-    {
-        suicide(ci);
-    }
+    if(ci){suicide(ci);}
 }
 
 void pm(int *pcn, char *msg)
@@ -226,6 +225,18 @@ void saytoroot(char *msg_)
 		if(info->connected&&(info->privilege==PRIV_ROOT))
 		{
 			pm(&info->clientnum, msg_);
+		}
+	}
+}
+
+void saytospy(char*msg__)
+{
+    loopv(clients)
+	{
+		clientinfo*info=clients[i];
+		if(info->connected&&info->spy)
+		{
+			pm(&info->clientnum, msg__);
 		}
 	}
 }
@@ -1142,8 +1153,8 @@ void loopteams(ident *id, uint *body)
     vector<char*> teams;
     if(m_ctf || m_collect)
     {
-        teams.add("good");
-        teams.add("evil");
+        teams.add((char*)"good");
+        teams.add((char*)"evil");
     }
     else
     {
@@ -1394,7 +1405,7 @@ ICOMMAND(disconnect, "i", (int *cn), disconnect_client(*cn, DISC_NONE));
  * @arg3 actor name (who kicked, to display in logs)
  * @example kick "0" "100500" "irc-bot"
  */
-COMMAND(kick, "iis");
+COMMAND(kick, "iiis");
 
 /**
  * Spectate or unspectate player
@@ -1483,6 +1494,7 @@ COMMAND(saytoadmin, "C");
  * @arg1 message
  */
 COMMAND(saytoroot,"C");
+COMMAND(saytospy,"C"); // say something just to spies
 // end of goldmod
 
 /**

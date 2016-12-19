@@ -2929,6 +2929,12 @@ void sortlist(char *list, ident *x, ident *y, uint *body)
 }
 COMMAND(sortlist, "srre");
 
+// goldmod
+ICOMMAND(+=,"ii",(int *a,int *b),intret(*a+=*b));
+ICOMMAND(-=,"ii",(int *a,int *b),intret(*a-=*b));
+ICOMMAND(*=,"ii",(int *a,int *b),intret(*a*=*b));
+ICOMMAND(/=,"ii",(int *a,int *b),intret(*a/=*b));
+
 ICOMMAND(+, "ii", (int *a, int *b), intret(*a + *b));
 ICOMMAND(*, "ii", (int *a, int *b), intret(*a * *b));
 ICOMMAND(-, "ii", (int *a, int *b), intret(*a - *b));

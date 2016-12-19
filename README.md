@@ -12,16 +12,16 @@ Goldmod is an advanced server modification based on remod.
 
 ** Features:**
 
-- customize your server wuth "ammo", "health","armour", ... commands
+- customize your server with "ammo", "health","armour", ... commands
 - very good UI
 - very userfriendly
 - informative server log with timestamp
 - IRC-Bot
 - invisible master and invisible admin
 - root privilege level (higher than admin)
-- cubescript scripting language
+- cubescript scripting language (very easy to add new functions/commands)
 - GEOIP SUPPORT FOR geoip country, geoip city, geoip region, geoip timezone
-- about 80 commands
+- 60+ server commands
 - many useful scripts for server 
 - scoreboard (sqlite3 + mysql)
 - remote control (udp, tdp, netcat)
@@ -31,6 +31,11 @@ Goldmod is an advanced server modification based on remod.
 - possibility to rename bots ("ainame" in server-init)
 - askidban libary (ban some vpns from server)
 - really often updates with bugfixes, new functions, ...
+- spy mode (invisible spectator)
+- implementation of rugby mode (if you carry the flag and shoot a teammate with a rifle, you pass the flag to your target)
+- allowmaster, allowadmin, allowroot, disallowmaster, disallowadmin, disallowroot (allow/disallow a specified player to claim a specified privilege)
+- block selfdamage or teamdamage
+- possibility of enabling and disabling commands via server-init.cfg
 
 and very much more ...
 
@@ -50,8 +55,10 @@ and very much more ...
     #adduser - adds new user to user system
     #deluser - delete a specified user from user system
     #setpriv - set players privilege to anything you want
-    #comp - execute cubescript code in server
+    #compile - execute cubescript code in server (very useful for testing some functions)
     #claim - claim master/admin via user system (e.g. #claim username password1 password2)
+    #spy - join/leave spy mode (invisible spectator)
+    #allowpriv - allow/disallow players to claim a specified privilege level
     
     ... and much more ... :D
 
@@ -59,9 +66,7 @@ and very much more ...
 
 **Work in Process:**
 
-    enable-disable-commands-system (currently not in work)
-    MixModule (currently not in work)
-    Clantag Detection (in work)
+    
 
 -------------------------------------------------------------------------------------------------------------
 

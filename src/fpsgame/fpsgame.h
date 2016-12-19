@@ -238,6 +238,10 @@ namespace server
         void *authchallenge;
         int authkickvictim;
         char *authkickreason;
+		int no_spawn;//goldmod
+        bool isinv;//goldmod
+        bool spy;
+        bool allowmaster,allowadmin,allowroot;
 
         // remod
         //hashtable<const char *, char *> vars;
@@ -349,6 +353,10 @@ namespace server
             aireinit = 0;
             needclipboard = 0;
             cleanclipboard();
+            spy=false;
+            allowmaster=allowadmin=allowroot=true;
+            isinv=false;
+            no_spawn=0;
             cleanauth();
             mapchange();
         }
@@ -484,5 +492,6 @@ namespace server
     const char *colorname(clientinfo *ci, const char *name = NULL);
     void addgban(const char *name);
     void cleargbans();
+    void deleteclient(clientinfo *c);
 }
 #endif

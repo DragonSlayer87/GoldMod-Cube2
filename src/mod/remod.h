@@ -126,6 +126,16 @@ namespace remod
 	void invadmin(int *cn); // admin privilege
 	void invmaster(int *cn); // master privilege
     void root(int *cn); // root privilege
+    void allowmaster_(int*actor,int *cn,bool val);
+    void allowadmin_(int*actor,int *cn,bool val);
+    void allowroot_(int*actor,int *cn,bool val);
+    
+    void set_allowm(int*actor,int *cn);
+    void set_allowa(int*actor,int *cn);
+    void set_allowr(int*actor,int *cn);
+    void set_disallowm(int*actor,int *cn);
+    void set_disallowa(int*actor,int *cn);
+    void set_disallowr(int*actor,int *cn);
     
     // remodex functions imported to goldmod
     enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };

@@ -457,6 +457,7 @@ namespace server
         loopv(clients)
         {
             clientinfo *ci = clients[i];
+            if(ci->spy) continue;
             if(ci->clientnum!=exclude && (!nospec || ci->state.state!=CS_SPECTATOR || (priv && (ci->privilege || ci->local))) && (!noai || ci->state.aitype == AI_NONE)) n++;
         }
         return n;
@@ -465,7 +466,7 @@ namespace server
     bool duplicatename(clientinfo *ci, const char *name)
     {
         if(!name) name = ci->name;
-        loopv(clients) if(clients[i]!=ci && !strcmp(name, clients[i]->name)) return true;
+        loopv(clients) if(clients[i]!=ci && !clients[i]->spy && !strcmp(name, clients[i]->name)) return true;
         return false;
     }
 
@@ -473,7 +474,7 @@ namespace server
     const char *colorname(clientinfo *ci, const char *name)
     {
         if(!name) name = ci->name;
-        if(name[0] && !duplicatename(ci, name) && ci->state.aitype == AI_NONE) return name;
+        if(name[0] && !ci->spy && !duplicatename(ci, name) && ci->state.aitype == AI_NONE) return name;
         static string cname[3];
         static int cidx = 0;
         cidx = (cidx+1)%3;
@@ -1094,6 +1095,7 @@ namespace server
     void revokemaster(clientinfo *ci)
     {
         ci->privilege = PRIV_NONE;
+        if(ci->isinv)ci->isinv=false; // set player privilege visible (just for this player)
         if(ci->state.state==CS_SPECTATOR && !ci->local) aiman::removeai(ci);
     }
 
@@ -1123,7 +1125,7 @@ namespace server
             {
                 if(ci->state.state==CS_SPECTATOR)
                 {
-                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators can't \f3claim \f7master here. Unspectate \f4yourself \f7and try again.");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators may not \f3claim \f7master here. Unspectate \f4yourself \f7and try again.");
                     return false;
                 }
                 loopv(clients) if(ci!=clients[i] && clients[i]->privilege)
@@ -1138,6 +1140,9 @@ namespace server
                 }
             }
             if(trial) return true;
+            if(wantpriv==PRIV_MASTER){if(!ci->allowmaster){sendf(ci->clientnum, 1, "ris", N_SERVMSG, "You are \f3not permitted \f7to claim \f4master\f7."); return false;}}
+            if(wantpriv==PRIV_ADMIN){if(!ci->allowadmin){sendf(ci->clientnum, 1, "ris", N_SERVMSG, "You are \f3not permitted \f7to claim \f4admin\f7."); return false;}}
+            if(wantpriv==PRIV_ROOT){if(!ci->allowroot){sendf(ci->clientnum, 1, "ris", N_SERVMSG, "You are \f3not permitted \f7to claim \f4root\f7."); return false;}}
             ci->privilege = wantpriv;
             name = privname(ci->privilege);
         }
@@ -1159,7 +1164,7 @@ namespace server
         if(val && authname)
         {
             if(authdesc && authdesc[0]) formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'. \f7[Domain: \fs\f4%s\fr]", colorname(ci), name, authname, authdesc);
-            else formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'\f7.", colorname(ci), name, authname);
+            else formatstring(msg, "Player \f3%s \f7claimed %s as \f4'\fs\f4%s\fr'\f7. [Domain: \f4Gauth\f7]", colorname(ci), name, authname);
         }
         else formatstring(msg, "Player \f3%s \f7has %s \f4%s\f7.", colorname(ci), val ? "claimed" : "relinquished", name);
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1169,8 +1174,11 @@ namespace server
         putint(p, mastermode);
         loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
         {
-            putint(p, clients[i]->clientnum);
-            putint(p, clients[i]->privilege);
+            if(clients[i]->isinv==false)
+            {
+                putint(p, clients[i]->clientnum);
+                putint(p, clients[i]->privilege);
+            }
         }
         putint(p, -1);
         sendpacket(-1, 1, p.finalize());
@@ -1181,7 +1189,9 @@ namespace server
         checkpausegame();
         return true;
     }
-
+    
+    VAR(allowmastertokick,0,0,1); // allow master to kick players (default 0 -> master can't kick anyone) -> auth players are aware of that
+    
     bool trykick(clientinfo *ci, int victim, const char *reason = NULL, const char *authname = NULL, const char *authdesc = NULL, int authpriv = PRIV_NONE, bool trial = false)
     {
         int priv = ci->privilege;
@@ -1195,7 +1205,7 @@ namespace server
             clientinfo *vinfo = (clientinfo *)getclientinfo(victim);
             if(vinfo && vinfo->connected && (priv > vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
             {
-                if (priv==PRIV_MASTER)
+                if (!allowmastertokick&&priv==PRIV_MASTER)
                 {
                     int cn = (int)ci->clientnum;
                     sendf(cn, 1, "ris", N_SERVMSG, "You can't \f3kick \f7a player if you just've \f4(inv-)master \f7privileges." );
@@ -1497,8 +1507,11 @@ namespace server
         gs.lifesequence = (gs.lifesequence + 1)&0x7F;
     }
 
+	
     void sendspawn(clientinfo *ci)
     {
+		// goldmod
+        if(ci->no_spawn == 1)return; // block spawn
         gamestate &gs = ci->state;
         spawnstate(ci);
         sendf(ci->ownernum, 1, "rii7v", N_SPAWNSTATE, ci->clientnum, gs.lifesequence,
@@ -1510,6 +1523,46 @@ namespace server
         //remod
         remod::onevent(ONSPAWN, "i", ci->clientnum);
     }
+    
+    // goldmod
+    void _respawn(clientinfo *ci)
+    {
+		// goldmod
+        if(ci->no_spawn == 1)return; // block spawn
+        if(ci->state.state==CS_DEAD) // only respawn if player is dead
+        {
+            gamestate &gs = ci->state;
+            spawnstate(ci);
+                sendf(ci->ownernum, 1, "rii7v", N_SPAWNSTATE, ci->clientnum, gs.lifesequence,
+                gs.health, gs.maxhealth,
+                gs.armour, gs.armourtype,
+                gs.gunselect, GUN_PISTOL-GUN_SG+1, &gs.ammo[GUN_SG]);
+            gs.lastspawn = gamemillis;
+
+            //remod
+            remod::onevent(ONSPAWN, "i", ci->clientnum);
+        }
+    }
+    
+    void nospawn(int *cn)
+    {
+        clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+        ci->no_spawn = 1;
+    }
+    
+    void canspawn(int *cn)
+    {
+        clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+        ci->no_spawn = 0;
+    }
+    
+    // block and unblock spawn of specified player
+    COMMAND(nospawn,"i");
+    COMMAND(canspawn,"i");
+    
+    // goldmod respawn command
+    ICOMMAND(respawn,"i",(int *cn),_respawn((clientinfo*)getinfo((int)*cn)));
+    // end of goldmod
 
     void sendwelcome(clientinfo *ci)
     {
@@ -1546,6 +1599,7 @@ namespace server
         loopv(clients)
         {
             clientinfo *ci = clients[i];
+            if(ci->spy) continue;
             if(!ci->connected || ci->clientnum == exclude) continue;
 
             putinitclient(ci, p);
@@ -1595,8 +1649,11 @@ namespace server
                 putint(p, mastermode);
                 hasmaster = true;
             }
-            putint(p, clients[i]->clientnum);
-            putint(p, clients[i]->privilege);
+            if(!clients[i]->isinv)
+            {
+                putint(p, clients[i]->clientnum);
+                putint(p, clients[i]->privilege);
+            }
         }
         if(hasmaster) putint(p, -1);
         if(gamepaused)
@@ -1658,6 +1715,7 @@ namespace server
             loopv(clients)
             {
                 clientinfo *oi = clients[i];
+                if(oi->spy) continue;
                 if(ci && oi->clientnum==ci->clientnum) continue;
                 putint(p, oi->clientnum);
                 putint(p, oi->state.state);
@@ -1907,7 +1965,18 @@ namespace server
     VAR(imissiontime, 0, 10000, INT_MAX);
     VAR(selfdamage,0,1,1);
     VAR(teamdamage,0,1,1);
-
+    VAR(modifiedmapspectator, 0, 1, 2);
+    
+    // hide and seek mode variables
+    VAR(seekdamage,0,1,1);
+    SVAR(hideteam,"hide");
+    SVAR(seekteam,"seek");
+    
+    bool shouldspectate(clientinfo *ci)
+    {
+        return !ci->local && ci->warned && modifiedmapspectator && (mcrc || modifiedmapspectator > 1);
+    }
+    
     void checkintermission()
     {
 
@@ -1934,11 +2003,145 @@ namespace server
             remod::onevent(ONIMISSION, "");
         }
     }
+    
+	// join spy mode
+	// command is based on zero's spy command -> thanks for that
+    void joinspy(int *cn)
+    {
+        clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+        if(!ci)return; // return if player typed invalid client number
+        if(ci->state.aitype != AI_NONE)return; // return if player is bot
+        
+            if(ci->spy)return; // return if player is already spy
+            flushserver(true);
+            // spectate client first (show only to client itself)
+            if(ci->state.state==CS_ALIVE) suicide(ci);
+            if(smode) smode->leavegame(ci);
+            ci->state.state = CS_SPECTATOR;
+            ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
+            aiman::removeai(ci);
+            sendf(ci->clientnum, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
+            // send out fake relinquish messages (for other clients only)
+            if(ci->privilege >= PRIV_MASTER)
+            {
+                defformatstring(msg, "Player \f3%s \f7has %s \f4%s\f7.", colorname(ci), "relinquished", privname(ci->privilege));
+                for(int i = demorecord ? -1 : 0; i < clients.length(); i++)
+                {
+                    clientinfo *cx = i >= 0 ? clients[i] : NULL;
+                    if((cx && (cx->clientnum == ci->clientnum || cx->state.aitype != AI_NONE))) continue;
+                    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+                    putint(p, N_SERVMSG);
+                    sendstring(msg, p);
+                    putint(p, N_CURRENTMASTER);
+                    putint(p, mastermode);
+                    loopvj(clients) if(clients[j]->privilege >= PRIV_MASTER)
+                    {
+						if(!clients[j]->spy)
+						{
+							putint(p, clients[j]->clientnum);
+							putint(p, clients[j]->privilege);
+						}
+                    }
+                    putint(p, -1);
+                    if(cx) sendpacket(cx->clientnum, 1, p.finalize());
+                    else { p.finalize(); recordpacket(1, p.packet->data, p.packet->dataLength); }
+                }
+            }
+            // send fake disconnect message (for other clients only)
+            sendf(-1, 1, "rxi2", ci->clientnum, N_CDIS, ci->clientnum);
+            remod::onevent(ONSPYJOIN,"i",ci->clientnum);
+            ci->spy = true; // finish it
+    }
+    
+	// leave spy-mode (if you are in spy-mode)
+    void leavespy(int *cn)
+    {
+        clientinfo*ci=(clientinfo*)getinfo((int)*cn);
+        if(!ci)return; // return if player typed invalid client number
+        if(ci->state.aitype != AI_NONE)return; // return if player is bot
+        
+        ci->spy = false;
+        // client should appear unspectated
+        if(mastermode < MM_LOCKED && !shouldspectate(ci))
+        {
+            // dead
+            if(smode && !smode->canspawn(ci, true))
+            {
+                ci->state.state = CS_DEAD;
+                ci->state.respawn();
+                ci->state.lasttimeplayed = lastmillis;
+                aiman::addclient(ci);
+                sendf(ci->clientnum, 1, "ri3", N_SPECTATOR, ci->clientnum, 0);
+                sendf(-1, 1, "ri2x", N_FORCEDEATH, ci->clientnum, ci->clientnum);
+            }
+            // alive
+            else
+            {
+                ci->state.state = CS_DEAD;
+                ci->state.respawn();
+                ci->state.lasttimeplayed = lastmillis;
+                aiman::addclient(ci);
+                sendspawn(ci);
+            }
+        }
+        // client should appear spectated
+        else
+        {
+            sendf(-1, 1, "ri3x", N_SPECTATOR, ci->clientnum, 1, ci->clientnum);
+        }
+        sendresume(ci);
+        sendinitclient(ci);
+        remod::onevent(ONSPYLEAVE,"i", ci->clientnum);
+        if(ci->privilege >= PRIV_MASTER)
+        {
+            defformatstring(msg, "Player \f3%s \f7has %s \f4%s\f7.", colorname(ci), "claimed", privname(ci->privilege));
+            for(int i = demorecord ? -1 : 0; i < clients.length(); i++)
+            {
+                clientinfo *cx = i >= 0 ? clients[i] : NULL;
+                if((cx && (cx->clientnum == ci->clientnum || cx->state.aitype != AI_NONE))) continue;
+                packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+                putint(p, N_SERVMSG);
+                sendstring(msg, p);
+                putint(p, N_CURRENTMASTER);
+                putint(p, mastermode);
+                loopvj(clients) if(clients[j]->privilege >= PRIV_MASTER)
+                {
+					if(!clients[j]->spy)
+					{
+						putint(p, clients[j]->clientnum);
+						putint(p, clients[j]->privilege);
+					}
+                }
+                putint(p, -1);
+                if(cx) sendpacket(cx->clientnum, 1, p.finalize());
+                else { p.finalize(); recordpacket(1, p.packet->data, p.packet->dataLength); }
+            }
+        }
+    }
+    
+    void isspy(int *cn){clientinfo*spy=(clientinfo*)getinfo((int)*cn);if(spy){intret(spy->spy?1:0);}else{intret(-1);};}
+    
+    COMMAND(joinspy,"i"); // join spy mode (only works if caller isn't spy)
+    COMMAND(leavespy,"i"); // leave spy mode (only works if caller is spy)
+    COMMAND(isspy,"i"); // check if player is spy (returns 1 if cn is spy, otherwise returns 0)
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
+    
+    VAR(rugbymode,0,0,1);
 
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
+        // goldmod
+        // rugbypass mode (bug: it blocks teamdamage in ctf moden -> but not important)
+        if(m_ctf&&rugbymode&&actor!=target&&(strcmp(actor->team,target->team)==0)&&gun==GUN_RIFLE) // only pass flag, if player shoots with rifle
+        {
+            ctfmode.rugbypass(actor,target);
+            return;
+        }
+        // goldmod
+        // block damage if hider hits the seeker
+        if(m_teammode&&!seekdamage&&(strcmp(target->team,seekteam)!=-1)&&(strcmp(actor->team,hideteam)!=-1))return; // hider can't hit the seeker
+        
         // goldmod
         // no self damage
         if(actor==target)
@@ -1956,7 +2159,7 @@ namespace server
         // end of goldmod*
         
         // remod
-        if(m_edit && nodamage == 1) return;
+        if(m_edit && nodamage == 1) return; // no damage if nodamage is enabled (only works in coop edit mode
         actor->state.ext.guninfo[gun].damage += damage;
 
         gamestate &ts = target->state;
@@ -2015,7 +2218,7 @@ namespace server
             // ts.respawn();
 
             // remod
-            if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
+            if(onfrag)      remod::onevent(ONFRAG,     "ii", actor->clientnum,target->clientnum);
             if(onteamkill)  remod::onevent(ONTEAMKILL, "ii", actor->clientnum, target->clientnum);
             if(ondeath)     remod::onevent(ONDEATH,    "ii", target->clientnum, actor->clientnum);
             if(onsuicide)
@@ -2318,8 +2521,6 @@ namespace server
         static bool compare(const crcinfo &x, const crcinfo &y) { return x.matches > y.matches; }
     };
 
-    VAR(modifiedmapspectator, 0, 1, 2);
-
     // remod
     void checkmaps(int req)
     {
@@ -2376,11 +2577,6 @@ namespace server
             clientinfo *ci = clients[i];
             if(!ci->local && ci->warned && ci->state.state != CS_SPECTATOR) forcespectator(ci);
         }
-    }
-
-    bool shouldspectate(clientinfo *ci)
-    {
-        return !ci->local && ci->warned && modifiedmapspectator && (mcrc || modifiedmapspectator > 1);
     }
 
     void unspectate(clientinfo *ci)
@@ -3065,6 +3261,7 @@ namespace server
                 //QUEUE_MSG;
                 getstring(text, p);
                 filtertext(text, text, true, true);
+                char *tex=text;
 
                 // remod
                 if(remod::checkflood(ci, type)) break;
@@ -3078,7 +3275,7 @@ namespace server
                     //conoutf(ftextchf);
                     break;
                 }
-
+                
                 if(remod::checkmutemode(ci))
                 {
                     remod::onevent(ONMUTEMODETRIGGER, "i", sender);
@@ -3095,7 +3292,14 @@ namespace server
                     }
                     break;
                 }
-
+                
+                if(cq && ci->spy)
+                { 
+                    sendservmsgf("\fs[\f4SPY\f7] (Public) \f7(\f3%s\f7): \f4%s\f7", cq->name,tex);
+                    remod::onevent(ONSPYSAY,"is",ci->clientnum,tex);
+                    break; 
+                }
+                
                 remod::onevent(ONTEXT, "is", sender, ftext);
                 DELETEA(ftext);
                 QUEUE_AI;
@@ -3112,6 +3316,7 @@ namespace server
                 getstring(text, p);
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
                 filtertext(text, text, true, true);
+                char*tx=text;
 
                 // remod
                 if(remod::checkflood(ci, type)) break;
@@ -3130,6 +3335,13 @@ namespace server
                     }
                     break;
                 }
+                if(cq->spy)
+                { 
+                    const char *message_team=tempformatstring("\fs[\f4SPY\f7] (Team) \f7(\f3%s\f7): \f4%s\f7",cq->name,tx);
+                    loopv(clients){if(clients[i]!=cq && clients[i]->spy && clients[i]->state.aitype==AI_NONE){sendf(clients[i]->clientnum, 1, "ris", N_SERVMSG, message_team);}}
+                    remod::onevent(ONSPYTEAMSAY,"is",cq->clientnum,tx);break;
+                }
+                
                 remod::onevent(ONSAYTEAM, "is", sender, text);
 
                 loopv(clients)
@@ -3157,6 +3369,7 @@ namespace server
 
                 filtertext(ci->name, text, false, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
+                if(ci->spy) break;
                 QUEUE_INT(N_SWITCHNAME);
                 QUEUE_STR(ci->name);
 
@@ -3170,13 +3383,13 @@ namespace server
             {
                 ci->playermodel = getint(p);
                 //QUEUE_MSG;
-
+                if(ci->spy) break;
                 //remod
                 if(remod::checkflood(ci, N_SWITCHMODEL)) break;
-
+                    
                 // remod
                 remod::onevent(ONSWITCHMODEL, "ii", sender, ci->playermodel);
-                QUEUE_INT(N_SWITCHMODEL);
+                QUEUE_INT(N_SWITCHMODEL);        // done
                 QUEUE_INT(ci->playermodel);
                 break;
             }
@@ -3194,7 +3407,7 @@ namespace server
                     if(ci->state.state==CS_ALIVE) suicide(ci);
                     copystring(ci->team, text);
                     aiman::changeteam(ci);
-                    sendf(-1, 1, "riisi", N_SETTEAM, sender, ci->team, ci->state.state==CS_SPECTATOR ? -1 : 0);
+                    sendf(ci->spy ? sender : -1, 1, "riisi", N_SETTEAM, sender, ci->team, ci->state.state==CS_SPECTATOR ? -1 : 0);
 
                     // remod
                     remod::onevent(ONSWITCHTEAM, "is", sender, text);
@@ -3287,6 +3500,7 @@ namespace server
                 {
                     ci->ping = ping;
                     loopv(ci->bots) ci->bots[i]->ping = ping;
+                    if(ci->spy) break;
                 }
                 QUEUE_MSG;
                 break;
@@ -3337,6 +3551,8 @@ namespace server
             case N_KICK:
             {
                 int victim = getint(p);
+                clientinfo*vic=(clientinfo*)getinfo(victim);
+                if(vic->spy)break; // can't kick spies
                 getstring(text, p);
                 filtertext(text, text);
                 trykick(ci, victim, text);
@@ -3349,6 +3565,7 @@ namespace server
                 if(!ci->privilege && !ci->local && (spectator!=sender || (ci->state.state==CS_SPECTATOR && mastermode>=MM_LOCKED))) break;
                 clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
                 if(!spinfo || !spinfo->connected || (spinfo->state.state==CS_SPECTATOR ? val : !val)) break;
+                if(spinfo->spy) break;
 
                 if(spinfo->state.state!=CS_SPECTATOR && val) forcespectator(spinfo);
                 else if(spinfo->state.state==CS_SPECTATOR && !val) unspectate(spinfo);
@@ -3369,6 +3586,7 @@ namespace server
                 if(!ci->privilege && !ci->local) break;
                 clientinfo *wi = getinfo(who);
                 if(!m_teammode || !text[0] || !wi || !wi->connected || !strcmp(wi->team, text)) break;
+                if(wi->spy) break;
 
                 // remod
                 remod::onevent(ONSETTEAM, "is", who, text);
@@ -3552,10 +3770,9 @@ namespace server
             {
                 int val = getint(p);
                 if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
-
                 // remod
                 //pausegame(val > 0, ci);
-                remod::pausegame(val > 0, ci);
+                remod::pausegame(val > 0, ci->spy ? NULL : ci);
 
                 break;
             }
@@ -3564,7 +3781,7 @@ namespace server
             {
                 int val = getint(p);
                 if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
-                changegamespeed(val, ci);
+                changegamespeed(val, ci->spy ? NULL : ci);
                 break;
             }
 

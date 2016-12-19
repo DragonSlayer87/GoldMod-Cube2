@@ -29,7 +29,11 @@
     B:C:default: 0 command EXT_ACK EXT_VERSION EXT_ERROR
 */
 
-    void extinfoplayer(ucharbuf &p, clientinfo *ci)
+VAR(showspy,0,0,1); // show spy clients
+VAR(extinfo_ident, 0, 0, 1);            // enable mod identification
+VAR(extinfo_extendedstats, 0, 1, 1);    // enable extended player stats
+
+    void extinfoplayer(ucharbuf &p, clientinfo *ci,bool z_extended)
     {
         ucharbuf q = p;
         putint(q, EXT_PLAYERSTATS_RESP_STATS); // send player stats following
@@ -104,12 +108,13 @@
             case EXT_PLAYERSTATS:
             {
                 int cn = getint(req); //a special player, -1 for all
+                bool z_extended = extinfo_ident && extinfo_extendedstats && req.remaining() && getint(req) > 0;
                 
                 clientinfo *ci = NULL;
                 if(cn >= 0)
                 {
                     loopv(clients) if(clients[i]->clientnum == cn) { ci = clients[i]; break; }
-                    if(!ci)
+                    if(!ci || (!showspy && ci->spy==true))
                     {
                         putint(p, EXT_ERROR); //client requested by id was not found
                         sendserverinforeply(p);
@@ -122,11 +127,11 @@
                 ucharbuf q = p; //remember buffer position
                 putint(q, EXT_PLAYERSTATS_RESP_IDS); //send player ids following
                 if(ci) putint(q, ci->clientnum);
-                else loopv(clients) putint(q, clients[i]->clientnum);
+                else loopv(clients) if(showspy || !clients[i]->spy) putint(q, clients[i]->clientnum);
                 sendserverinforeply(q);
             
-                if(ci) extinfoplayer(p, ci);
-                else loopv(clients) extinfoplayer(p, clients[i]);
+                if(ci) extinfoplayer(p, ci,z_extended);
+                else loopv(clients) if(showspy || !clients[i]->spy) extinfoplayer(p, clients[i], z_extended);
                 return;
             }
 

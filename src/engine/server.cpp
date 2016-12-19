@@ -326,13 +326,13 @@ const char *disconnectreason(int reason)
         case DISC_LOCAL: return "Server is in Local Mode";
         case DISC_KICK: return "Kicked/Banned";
         case DISC_MSGERR: return "Message Error";
-        case DISC_IPBAN: return "IP is banned";
+        case DISC_IPBAN: return "IP-Address is banned";
         case DISC_PRIVATE: return "Server is in Private Mode";
         case DISC_MAXCLIENTS: return "Server is FULL";
         case DISC_TIMEOUT: return "Connection timed out";
         case DISC_OVERFLOW: return "Buffer Overflow";
         case DISC_PASSWORD: return "Invalid Password";
-		case DISC_GBAN: return "IP is gbanned";
+		case DISC_GBAN: return "IP-Address is gbanned";
 		case DISC_ASKIDBAN: return "Askidban";
         default: return NULL;
     }

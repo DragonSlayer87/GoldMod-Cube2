@@ -13,6 +13,7 @@
 #include "GeoIP.h"
 #include "GeoIPCity.h"
 #include "remod.h"
+#include"remodex.h"
 
 EXTENSION(GEOIP);
 
@@ -44,14 +45,9 @@ void loadgeoipcountry(char *dbname)
 void loadgeoipcity(const char *path, bool isgeocity)
 {
         GeoIP *gi;
-        string dbtype;
-        memset(dbtype, 0,sizeof(dbtype));
         const char *fname = findfile(path, "r"); // full path
         gi = GeoIP_open(fname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
         GeoIP_set_charset(gi, GEOIP_CHARSET_UTF8); //utf8 names for utf8 -> cubescript
-        
-        if(isgeocity)
-            strcpy(dbtype, "geocity");
         
         if(gi)
         {
@@ -59,11 +55,11 @@ void loadgeoipcity(const char *path, bool isgeocity)
                 geocity = gi;
             else
                 geoip = gi;
-            conoutf(CON_ERROR, "Geoip: %s loaded (db: \"%s\")", dbtype, fname);
+            conoutf(CON_ERROR, "Geoip: geocity loaded (db: \"%s\")", fname);
         }
         else
         {
-            conoutf(CON_ERROR, "Geoip: can not load %s (db: \"%s\")", dbtype, fname);
+            conoutf(CON_ERROR, "Geoip: geocity can ot load (db: \"%s\")", fname);
         }
 }
     
